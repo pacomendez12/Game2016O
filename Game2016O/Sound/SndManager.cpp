@@ -113,7 +113,6 @@ void CSndManager::UnitializeSoundEngine()
 	SAFE_RELEASE(m_pIPrimaryBuffer);
 	SAFE_RELEASE(m_pIDirectSound);
 	SAFE_DELETE(m_pFactory);
-	
 }
 
 CSndFx* CSndManager::LoadSoundFx(TCHAR *pszFileName, unsigned long ulIDSndFx)
@@ -165,7 +164,6 @@ CSndFx* CSndManager::LoadSoundFx(TCHAR *pszFileName, unsigned long ulIDSndFx)
 			break;
 		}
 	}
-
 	DSBUFFERDESC dsbd;
 	WAVEFORMATEX wfx;
 	wfx.cbSize=0;
