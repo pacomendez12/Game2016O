@@ -4,11 +4,14 @@
 #include "HSM\StateMachineManager.h"
 #include "Graphics\ImageBMP.h"
 #include "SMain.h"
+
+
 CSMainMenu::CSMainMenu()
 {
-	m_pSRVBackGround = NULL;
-	m_pSRVMainOption1 = NULL;
-	m_pSRVMainOption2 = NULL;
+	m_pSRVBackGround =	nullptr;
+	m_pSRVMainOption1 = nullptr;
+	m_pSRVMainOption2 = nullptr;
+	m_pTextRenderer =	nullptr;
 }
 CSMainMenu::~CSMainMenu()
 {
@@ -55,13 +58,24 @@ void CSMainMenu::OnEntry()
 	MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\Explosion.wav", 1);
 	m_fOffsetX = 0.0f;
 	m_fOffsetY = 0.0f;
+
+	//inicializar el render de texto
+	m_pTextRenderer = new CDXTextRenderer(MAIN->m_pDXManager, MAIN->m_pDXPainter);
+	if (!m_pTextRenderer->Initialize())
+	{
+		// TODO: validate
+	}
 }
 void CSMainMenu::OnExit()
 {
 	SAFE_RELEASE(m_pSRVBackGround);
 	SAFE_RELEASE(m_pSRVMainOption1);
 	SAFE_RELEASE(m_pSRVMainOption2);
+
+	m_pTextRenderer->Uninitialize();
+	SAFE_DELETE(m_pTextRenderer);
 }
+
 #include "ActionEvent.h"
 #include "SGame.h"
 unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
@@ -128,6 +142,15 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 		};
 		Ctx->PSSetShaderResources(3, 1, &m_pSRVMainOption2);
 		Painter->DrawIndexed(Frame2, 4, FrameIndex, 6);
+
+		//text
+		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
+			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
+			/*RotationZ(3.141592 / 4) * */ // Orientacion del text
+			Translation(-1, 1, 0); // Posicion del text
+		
+		m_pTextRenderer->RenderText(ST, "Francisco Mendez");
+
 		MAIN->m_pDXManager->GetSwapChain()->Present(1, 0);
 	}
 	if (EVENT_WIN32 == pEvent->m_ulEventType)

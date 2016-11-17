@@ -1,5 +1,6 @@
 #pragma once
 #include "HSM\StateBase.h"
+#include "DXTextRenderer.h"
 #include <d3d11.h>
 #define CLSID_CSMainMenu 0x12345566
 class CSMainMenu :
@@ -12,6 +13,7 @@ public:
 	CSMainMenu();
 	virtual ~CSMainMenu();
 private:
+	CDXTextRenderer *m_pTextRenderer;
 	ID3D11ShaderResourceView
 		*m_pSRVBackGround,
 		*m_pSRVMainOption1,

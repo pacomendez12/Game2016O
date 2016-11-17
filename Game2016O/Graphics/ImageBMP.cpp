@@ -68,6 +68,7 @@ CImageBMP* CImageBMP::CreateBitmapFromFile(
 				p->g = Paleta[pRow[i]].rgbGreen;
 				p->r = Paleta[pRow[i]].rgbRed;
 				p->a = Paleta[pRow[i]].rgbReserved;
+				*p = pFnAlpha ? pFnAlpha(*p) : *p;
 			}
 		}
 		return pNewImage;
@@ -91,6 +92,7 @@ CImageBMP* CImageBMP::CreateBitmapFromFile(
 				p->g = pRow[3*i + 1];
 				p->r = pRow[3*i + 2];
 				p->a = 0xff;
+				*p = pFnAlpha ? pFnAlpha(*p) : *p;
 			}
 		}
 		return pNewImage;
