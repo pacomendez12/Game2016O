@@ -11,6 +11,7 @@ class CFX //técnica
 	ID3D11VertexShader* m_pVS;
 	vector<ID3D11PixelShader*> m_vecFX;
 	ID3D11Buffer *m_pIB, *m_pVB;
+public:
 	struct VERTEX
 	{
 		VECTOR4D Position;
@@ -18,7 +19,7 @@ class CFX //técnica
 		VECTOR4D Color;
 		static D3D11_INPUT_ELEMENT_DESC InputLayout[];
 	}Frame[4];
-public:
+
 	ID3D11ShaderResourceView* m_pSRVInput0;
 	ID3D11RenderTargetView*   m_pRTVOutput;
 	struct PARAMS

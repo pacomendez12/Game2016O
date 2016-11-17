@@ -2,6 +2,7 @@
 #include "HSM\StateBase.h"
 #include "Graphics\DXManager.h"
 #include "Graphics\DXBasicPainter.h"
+#include "Graphics\FX.h"
 #include "Sound\SndFactory.h"
 #include "Sound\SndManager.h"
 #include "Sound\SndControl.h"
@@ -42,6 +43,8 @@ public:
 	CInputManager* m_pInputManager;
 	CInputProcessor* m_pInputProcessor;
 	CNetProcessor *m_pNetProcessor;
+	CFX *m_FX;
+
 	bool        m_bInitializationCorrect;
 	unsigned long GetClassID() { return CLSID_CSMain; }
 	const char* GetClassString() { return "CSMain"; }

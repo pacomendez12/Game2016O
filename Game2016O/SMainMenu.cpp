@@ -1,10 +1,11 @@
+#include <string>
 #include "stdafx.h"
 #include "SMainMenu.h"
 #include "HSM\EventWin32.h"
 #include "HSM\StateMachineManager.h"
 #include "Graphics\ImageBMP.h"
 #include "SMain.h"
-
+#include <iostream>
 
 CSMainMenu::CSMainMenu()
 {
@@ -17,12 +18,18 @@ CSMainMenu::~CSMainMenu()
 {
 }
 
+bool CSMainMenu::LoadButtons()
+{
+	return false;
+}
+
 void CSMainMenu::OnEntry()
 {
+	CSMain * mainState = (CSMain *)GetSuperState();
 	m_nOption = 0;
 	printf("Iniciando menú principal...\n"); fflush(stdout);
 	{
-		printf("Cargando recurso de fondo..."); fflush(stdout);
+		printf("Cargando recurso de fondo...\n"); fflush(stdout);
 		auto img = CImageBMP::CreateBitmapFromFile("..\\Assets\\MainMenu.bmp", NULL);
 		if (!img) { printf("Recurso no encontrado\n"); fflush(stdout); }
 		else
@@ -32,6 +39,62 @@ void CSMainMenu::OnEntry()
 				tex, NULL, &m_pSRVBackGround);
 		}
 	}
+
+	/* Generar imagenes: https://dabuttonfactory.com/#t=Salir&f=Ubuntu-Bold&ts=90&tc=fff&tshs=1&tshc=999&hp=180&vp=11&c=0&bgt=gradient&bgc=f90&ebgc=e69138&be=1&bs=1&bc=f90*/
+
+	/* Cargando Recursos de botones */
+	const char *menuLabel[NUMBER_BUTTONS] { "jugar", "servidor", "salir" };
+	const char *menuOptionsLabel[BUTTON_STATES_NUMBER] { "n", "f" }; // n = on, f = off
+
+	m_vMenuButtons.resize(NUMBER_BUTTONS);
+
+	/* Cargando las imagenes */
+	for (int btnIdx = 0; btnIdx < NUMBER_BUTTONS; btnIdx++)
+	{
+		for (int stsIdx = 0; stsIdx < BUTTON_STATES_NUMBER; ++stsIdx)
+		{
+			std::string filePath = std::string("..\\Assets\\") + menuLabel[btnIdx] + "_" + menuOptionsLabel[stsIdx] + ".bmp";
+			auto image = CImageBMP::CreateBitmapFromFile((char *) filePath.c_str(), nullptr);
+			if (image) {
+				std::cout << "IMG: " << filePath << std::endl;
+				auto texture = image->CreateTexture(MAIN->m_pDXManager);
+				MAIN->m_pDXManager->GetDevice()->CreateShaderResourceView(
+					texture, NULL, &m_vMenuButtons[btnIdx].pSRV[stsIdx]);
+			}
+			else {
+				std::cerr << "No se pudo cargar la imagen " << filePath << std::endl;
+				return;
+			}
+		}
+
+		/* eligiendo las coordenadas */
+		m_vMenuButtons[btnIdx].frame[0].Position = { -0.8f, 1.8f / float(NUMBER_BUTTONS) - 0.15f - (btnIdx * 0.35f), 0, 1 };
+		m_vMenuButtons[btnIdx].frame[1].Position = { -0.2f, 1.8f / float(NUMBER_BUTTONS) - 0.15f - (btnIdx * 0.35f), 0, 1 };
+		m_vMenuButtons[btnIdx].frame[2].Position = { -0.8f, 1.0f / float(NUMBER_BUTTONS) - 0.15f - (btnIdx * 0.35f), 0, 1 };
+		m_vMenuButtons[btnIdx].frame[3].Position = { -0.2f, 1.0f / float(NUMBER_BUTTONS) - 0.15f - (btnIdx * 0.35f), 0, 1 };
+
+		m_vMenuButtons[btnIdx].frame[0].Color = { 1, 1, 1, 1 };
+		m_vMenuButtons[btnIdx].frame[1].Color = { 1, 1, 1, 1 };
+		m_vMenuButtons[btnIdx].frame[2].Color = { 1, 1, 1, 1 };
+		m_vMenuButtons[btnIdx].frame[3].Color = { 1, 1, 1, 1 };
+
+		m_vMenuButtons[btnIdx].frame[0].TexCoord = { 0, 0, 0, 0 };
+		m_vMenuButtons[btnIdx].frame[1].TexCoord = { 1, 0, 0, 0 };
+		m_vMenuButtons[btnIdx].frame[2].TexCoord = { 0, 1, 0, 0 };
+		m_vMenuButtons[btnIdx].frame[3].TexCoord = { 1, 1, 0, 0 };
+
+		const unsigned long indices[6]{ 0, 1, 2, 2, 1, 3 };
+
+		memcpy(m_vMenuButtons[btnIdx].indices, indices, sizeof(unsigned long) * 6);
+		*(m_vMenuButtons[btnIdx].indices) = *indices;
+		m_vMenuButtons[btnIdx].state = ButtonState::NORMAL;
+	}
+
+	/* Por defecto el primer boton es el seleccionado */
+	m_nOption = DEFAULT_BUTTON;
+	m_vMenuButtons[m_nOption].state = ButtonState::OVER;
+
+
 	{
 		printf("Cargando recurso de opcion 1..."); fflush(stdout);
 		auto img = CImageBMP::CreateBitmapFromFile("..\\Assets\\MainOption1.bmp", NULL);
@@ -121,9 +184,22 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 		Ctx->PSSetShaderResources(3, 1, &m_pSRVBackGround);
 		Painter->DrawIndexed(Frame, 4, FrameIndex, 6);
 		
+
 		Painter->m_Params.World = Identity();
+
+		/* Dibujar botones */
+
+		for (auto option : m_vMenuButtons)
+		{
+			Ctx->PSSetShaderResources(3, 1, &(option.pSRV[option.state]));
+			Painter->DrawIndexed(option.frame, 4, option.indices, 6);
+
+		}
+
+		//CDXBasicPainter::VERTEX
+
 		//Dibujar la opcion 1
-		CDXBasicPainter::VERTEX Frame1[4]
+		/*CDXBasicPainter::VERTEX Frame1[4]
 		{
 			{ { -0.5f,2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
 			{ { 0.5f, 2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
@@ -141,8 +217,10 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 			{ { 0.5,  -2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
 		};
 		Ctx->PSSetShaderResources(3, 1, &m_pSRVMainOption2);
-		Painter->DrawIndexed(Frame2, 4, FrameIndex, 6);
+		Painter->DrawIndexed(Frame2, 4, FrameIndex, 6);*/
 
+		//TDOD: resolver por que no se muestran los objetos cuando dibujo texto
+#if 0
 		//text
 		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
 			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
@@ -150,6 +228,7 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 			Translation(-1, 1, 0); // Posicion del text
 		
 		m_pTextRenderer->RenderText(ST, "Francisco Mendez");
+#endif
 
 		MAIN->m_pDXManager->GetSwapChain()->Present(1, 0);
 	}

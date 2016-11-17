@@ -1,19 +1,21 @@
 #include "stdafx.h"
 #include "SMain.h"
 #include <stdio.h>
+#include <iostream>
 
 #include "InputProcessor.h"
 
 CSMain::CSMain()
 {
-	m_hWnd = NULL;
-	m_pDXManager = NULL;
-	m_pDXPainter = NULL;
-	m_pInputManager = NULL;
-	m_pSndManager = NULL;
+	m_hWnd = nullptr;
+	m_pDXManager = nullptr;
+	m_pDXPainter = nullptr;
+	m_pInputManager = nullptr;
+	m_pSndManager = nullptr;
 	m_bInitializationCorrect = true;
-	m_pInputProcessor = NULL;
-	m_pNetProcessor = NULL;
+	m_pInputProcessor = nullptr;
+	m_pNetProcessor = nullptr;
+	m_FX = nullptr;
 }
 
 
@@ -23,12 +25,14 @@ CSMain::~CSMain()
 
 void CSMain::OnEntry(void)
 {
+	std::cout << "OnEntry: CSMain" << std::endl;
 	m_pInputProcessor = new CInputProcessor(m_pSMOwner);
 	printf("Iniciando motores...\n");
-	printf("Graphics Init...");
+	printf("Graphics Init...\n");
 	fflush(stdout);
 	m_pDXManager = new CDXManager();
 	m_pDXPainter = new CDXBasicPainter(m_pDXManager);
+	m_FX = new CFX(m_pDXManager);
 	if (!m_pDXManager->Initialize(m_hWnd, CDXManager::EnumAndChooseAdapter(NULL)))
 	{
 		m_bInitializationCorrect = false;
@@ -47,7 +51,7 @@ void CSMain::OnEntry(void)
 	{
 		printf("BAD ):...\n"); fflush(stdout);
 	}
-	printf("Sound init..."); fflush(stdout);
+	printf("Sound init...\n"); fflush(stdout);
 	CSndFactory* pFactory = new CSndFactory();
 	m_pSndManager=(CSndManager*)pFactory->CreateObject(L"CSndManager");
 	if (!m_pSndManager->InitSoundEngine(m_hWnd))
@@ -165,4 +169,5 @@ void CSMain::OnExit(void)
 	Factory.DestroyObject(m_pSndManager);
 	SAFE_DELETE(m_pInputManager);
 	SAFE_DELETE(m_pInputProcessor);
+	std::cout << "onExit: " << GetClassString() << std::endl;
 }
