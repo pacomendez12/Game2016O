@@ -1,20 +1,28 @@
 #pragma once
 #include "HSM\EventBase.h"
 
-#define ACTION_EVENT           0x45ccb07
-#define JOY_BUTTON_A_PRESSED   1
-#define JOY_BUTTON_A_RELEASED  2
-#define JOY_BUTTON_B_PRESSED   3
-#define JOY_BUTTON_B_RELEASED  4
-#define JOY_BUTTON_X_PRESSED   5
-#define JOY_BUTTON_X_RELEASED  6
-#define JOY_BUTTON_Y_PRESSED   7
-#define JOY_BUTTON_Y_RELEASED  8
+#define ACTION_EVENT			0x45ccb07
+#define JOY_BUTTON_X_PRESSED	1
+#define JOY_BUTTON_X_RELEASED	2
+#define JOY_BUTTON_A_PRESSED	3
+#define JOY_BUTTON_A_RELEASED	4
+#define JOY_BUTTON_B_PRESSED	5
+#define JOY_BUTTON_B_RELEASED	6
+#define JOY_BUTTON_Y_PRESSED	7
+#define JOY_BUTTON_Y_RELEASED	8
 
-#define JOY_AXIS_LX            9
-#define JOY_AXIS_LY            10
-#define JOY_AXIS_RX			   11
-#define JOY_AXIS_RY			   12
+#define JOY_AXIS_LX				9
+#define JOY_AXIS_LY				10
+#define JOY_AXIS_RX				11
+#define JOY_AXIS_RY				12
+
+enum JoyKeyState {
+	JOY_AXIS_RELEASED = 13,
+	JOY_AXIS_UP_PRESSED,
+	JOY_AXIS_DOWN_PRESSED,
+	JOY_AXIS_LEFT_PRESSED,
+	JOY_AXIS_RIGHT_PRESSED,
+};
 
 class CActionEvent :
 	public CEventBase

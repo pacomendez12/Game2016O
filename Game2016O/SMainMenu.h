@@ -7,8 +7,15 @@
 #include <vector>
 #define CLSID_CSMainMenu 0x12345566
 
+enum MenuOptions {
+	JUGAR = 0,
+	UNIRSE,
+	SERVIDOR,
+	SALIR,
+	NUMBER_BUTTONS
+};
 
-#define NUMBER_BUTTONS 3
+//#define NUMBER_BUTTONS 4
 #define BUTTON_STATES_NUMBER 2
 #define DEFAULT_BUTTON 0
 
@@ -48,6 +55,8 @@ private:
 	void OnEntry();
 	unsigned long OnEvent(CEventBase* pEvent);
 	void OnExit();
+
+	void ActivateButton(int pIdx);
 	float m_fOffsetX;
 	float m_fOffsetY;
 };
