@@ -1,6 +1,1 @@
-﻿  SMainMenu.cpp
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\smainmenu.cpp(94): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\smainmenu.cpp(98): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\smainmenu.cpp(148): warning C4305: 'argument': truncation from 'double' to 'float'
-  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.exe
-  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.pdb (Full PDB)
+﻿
