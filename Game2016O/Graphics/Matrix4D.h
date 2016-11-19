@@ -1,5 +1,22 @@
 #pragma once
 
+#define MAX_VECTOR4D(A,B) \
+{\
+	(A).x > (B).x ? (A).x : (B).x,\
+	(A).y > (B).y ? (A).y : (B).y,\
+	(A).z > (B).z ? (A).z : (B).z,\
+	(A).w > (B).w ? (A).w : (B).w\
+}
+
+#define MIN_VECTOR4D(A,B) \
+{\
+	(A).x < (B).x ? (A).x : (B).x,\
+	(A).y < (B).y ? (A).y : (B).y,\
+	(A).z < (B).z ? (A).z : (B).z,\
+	(A).w < (B).w ? (A).w : (B).w\
+}
+
+
 struct VECTOR4D
 {
 	union
@@ -41,6 +58,7 @@ VECTOR4D operator*(VECTOR4D& A, VECTOR4D& B);
 VECTOR4D operator*(VECTOR4D& A, float s);
 VECTOR4D operator-(VECTOR4D& A, VECTOR4D &B);
 VECTOR4D operator+(VECTOR4D& A, VECTOR4D &B);
+VECTOR4D operator/(VECTOR4D& A, float B);
 VECTOR4D Cross3(VECTOR4D&A, VECTOR4D &B);
 float    Dot(VECTOR4D& A, VECTOR4D& B);
 float    Magnity(VECTOR4D& A);

@@ -181,6 +181,31 @@ void CMesh::BuildTangentSpaceFromTexCoordsIndexed(bool bGenerateNormal)
 		}
 }
 
+void CMesh::GenerarCentroides()
+{
+	m_Centroides.resize(m_Indices.size() / 3);
+	for (int i = 0; i < m_Indices.size(); i += 3)
+	{
+		VECTOR4D A = m_Vertices[m_Indices[i]].Position * m_World;
+		VECTOR4D B = m_Vertices[m_Indices[i + 1]].Position * m_World;
+		VECTOR4D C = m_Vertices[m_Indices[i + 2]].Position * m_World;
+
+		m_Centroides[i / 3].id = i / 3;
+		m_Centroides[i / 3].code = 0;
+		m_Centroides[i / 3].position = (A + B + C) / 3;
+		m_Centroides[i / 3].normal = Normalize(m_Centroides[i / 3].position);
+
+		/* Get Max */
+		m_Centroides[i / 3].max = MAX_VECTOR4D(A, B);
+		m_Centroides[i / 3].max = MAX_VECTOR4D(m_Centroides[i / 3].max, C);
+
+		/* Get Min */
+		m_Centroides[i / 3].min = MIN_VECTOR4D(A, B);
+		m_Centroides[i / 3].min = MIN_VECTOR4D(m_Centroides[i / 3].min, C);
+
+	}
+}
+
 void CMesh::Optimize()
 {
 	//Remover vértices duplicados, Complejidad temporal O(N^2)

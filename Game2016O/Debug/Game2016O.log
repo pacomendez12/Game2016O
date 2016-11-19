@@ -1,4 +1,3 @@
-﻿  InputProcessor.cpp
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\inputprocessor.cpp(78): warning C4305: 'initializing': truncation from 'double' to 'float'
-  Game2016O.vcxproj -> C:\Users\paco\documents\visual studio 2015\Projects\Game2016O\Debug\Game2016O.exe
-  Game2016O.vcxproj -> C:\Users\paco\documents\visual studio 2015\Projects\Game2016O\Debug\Game2016O.pdb (Full PDB)
+﻿  SMain.cpp
+  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.exe
+  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.pdb (Full PDB)

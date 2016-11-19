@@ -2,8 +2,20 @@
 #include "SMain.h"
 #include <stdio.h>
 #include <iostream>
+#include <memory>
+#include <string>
+#include "BlenderImporter.h"
 
 #include "InputProcessor.h"
+
+const char *g_cszMeshesNames[]{
+	"table", "mallet"
+};
+
+const char *g_cszMeshesFileNames[]{
+	"table.blend", "mallet.blend"
+};
+
 
 CSMain::CSMain()
 {
@@ -16,16 +28,41 @@ CSMain::CSMain()
 	m_pInputProcessor = nullptr;
 	m_pNetProcessor = nullptr;
 	m_FX = nullptr;
+
+	InitializeCriticalSection(&m_csLock);
+	// cargar los modelos asyncronamente.
+	LoadModels();
 }
 
 
 CSMain::~CSMain()
 {
+	for (auto mesh : m_mMeshes)
+	{
+		delete mesh.second;
+	}
+
+	m_mMeshes.clear();
+	DeleteCriticalSection(&m_csLock);
+}
+
+short CSMain::GetModelsLoadingPercentage()
+{
+	return AreModelsLoaded()? 100 : 0;
+}
+
+CMesh *CSMain::GetMeshByString(std::string sMesh)
+{
+	Lock();
+	auto fnd = m_mMeshes.find(sMesh);
+	return m_mMeshes.end() == fnd ? nullptr : fnd->second;
+	Unlock();
 }
 
 void CSMain::OnEntry(void)
 {
 	std::cout << "OnEntry: CSMain" << std::endl;
+
 	m_pInputProcessor = new CInputProcessor(m_pSMOwner);
 	printf("Iniciando motores...\n");
 	printf("Graphics Init...\n");
@@ -78,7 +115,7 @@ void CSMain::OnEntry(void)
 		printf("OK :)... \n");
 	}
 
-	printf("Initializing network wngine...");
+	printf("Initializing network engine...");
 	fflush(stdout);
 
 	m_pNetProcessor = new CNetProcessor(m_pSMOwner);
@@ -170,4 +207,33 @@ void CSMain::OnExit(void)
 	SAFE_DELETE(m_pInputManager);
 	SAFE_DELETE(m_pInputProcessor);
 	std::cout << "onExit: " << GetClassString() << std::endl;
+}
+
+
+//thread process
+DWORD CSMain::LoaderThread(LPVOID obj)
+{
+	CSMain *csmain = (CSMain *)obj;
+	std::cout << "Iniciando el hilo cargador de meshes..." << std::endl;
+	for (int i = 0; i < MESHES_NUMBER; ++i)
+	{
+		std::cout << "Loading mesh " << g_cszMeshesNames[i] << std::endl;
+		std::unique_ptr<CMesh> geometry = CBlenderImporter::ImportObject((std::string("..\\Assets\\") + std::string(g_cszMeshesFileNames[i])).c_str());
+		CMesh *ptrMesh = geometry.release();
+		csmain->m_mMeshes.insert(std::make_pair(std::string(g_cszMeshesNames[i]), ptrMesh));
+
+		std::cout << "Mesh " << g_cszMeshesNames[i] << " has " << ptrMesh->m_Vertices.size() << std::endl;
+	}
+	return 0;
+}
+
+void CSMain::LoadModels()
+{
+	if (!AreModelsLoaded())
+	{
+		Lock();
+		DWORD dwThreadID;
+		CreateThread(nullptr, 4096, (LPTHREAD_START_ROUTINE)CSMain::LoaderThread, this, 0, &dwThreadID);
+		Unlock();
+	}
 }

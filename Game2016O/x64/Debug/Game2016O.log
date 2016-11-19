@@ -1,1 +1,61 @@
-﻿
+﻿  stdafx.cpp
+  SndObject.cpp
+  SndManager.cpp
+  SndFx.cpp
+  SndFactory.cpp
+  SndControl.cpp
+  SMainMenu.cpp
+  SMain.cpp
+  SIntroduction.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sintroduction.cpp(72): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sintroduction.cpp(79): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sintroduction.cpp(83): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  SGame.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(14): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(43): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(49): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(55): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(71): warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(71): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(73): warning C4244: 'argument': conversion from 'double' to 'UINT8', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(87): warning C4267: 'argument': conversion from 'size_t' to 'unsigned long', possible loss of data
+  NetProcessor.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\netprocessor.cpp(7): warning C4312: 'type cast': conversion from 'unsigned long' to 'CEventNetwork *' of greater size
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\netprocessor.cpp(50): warning C4312: 'type cast': conversion from 'unsigned long' to 'char *' of greater size
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\netprocessor.cpp(121): warning C4312: 'type cast': conversion from 'unsigned long' to 'char *' of greater size
+  InputManager.cpp
+  InputProcessor.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\inputprocessor.cpp(78): warning C4305: 'initializing': truncation from 'double' to 'float'
+  StateMachineManager.cpp
+  StateBase.cpp
+  ObjectStock.cpp
+  ObjectCommand.cpp
+  ObjectBase.cpp
+  EventWin32.cpp
+  EventListener.cpp
+  EventBase.cpp
+  Generating Code...
+  Compiling...
+  MeshMathSurface.cpp
+  Mesh.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\graphics\mesh.cpp(14): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned long', possible loss of data
+  Matrix4D.cpp
+  ImageBMP.cpp
+  FX.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\graphics\fx.cpp(104): warning C4244: '=': conversion from 'UINT' to 'FLOAT', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\graphics\fx.cpp(105): warning C4244: '=': conversion from 'UINT' to 'FLOAT', possible loss of data
+  DXManager.cpp
+  DXBasicPainter.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\graphics\dxbasicpainter.cpp(28): warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\graphics\dxbasicpainter.cpp(28): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\graphics\dxbasicpainter.cpp(99): warning C4244: '=': conversion from 'float' to 'INT', possible loss of data
+  Game2016O.cpp
+  DXTextRenderer.cpp
+  BlenderImporter.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\blenderimporter.cpp(63): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\blenderimporter.cpp(64): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  ActionEvent.cpp
+  Generating Code...
+BlenderImporter.obj : error LNK2019: unresolved external symbol aiImportFile referenced in function "public: static class std::unique_ptr<class CMesh,struct std::default_delete<class CMesh> > __cdecl CBlenderImporter::ImportObject(char const *)" (?ImportObject@CBlenderImporter@@SA?AV?$unique_ptr@VCMesh@@U?$default_delete@VCMesh@@@std@@@std@@PEBD@Z)
+C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party\assimp-vc140-mt.lib : warning LNK4272: library machine type 'X86' conflicts with target machine type 'x64'
+C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\x64\Debug\Game2016O.exe : fatal error LNK1120: 1 unresolved externals

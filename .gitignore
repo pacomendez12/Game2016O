@@ -68,7 +68,6 @@ Debug\*
 *.ipch
 *.zip
 *.pdf
-*.dll
 *.db
 *.aps
 *.iobj

@@ -3,6 +3,9 @@
 #include <cstdio>
 #include "SMain.h"
 #include "HSM\StateMachineManager.h"
+#include "BlenderImporter.h"
+#include <memory>
+#include <iostream>
 
 
 void CSGame::OnEntry()
@@ -16,8 +19,15 @@ void CSGame::OnEntry()
 	MAIN->m_pDXPainter->m_Params.View = View(EyePos, Target, Up);
 	MAIN->m_pDXPainter->m_Params.World = Identity();
 	//creating mesh
-	m_pGeometry = new CMesh;
-	m_pGeometry->LoadSuzzane();
+	//m_pGeometry = new CMesh;
+	//std::unique_ptr<CMesh> geometry = CBlenderImporter::ImportObject("..\\Assets\\table.blend");
+	//m_pGeometry = geometry.release();
+	//m_pGeometry->LoadSuzzane();
+	//std::cout << m_pGeometry->m_Vertices.size() << std:: endl;
+
+	// obteniendo los meshes
+	m_pTable = MAIN->GetMeshByString("table");
+	m_pMallet = MAIN->GetMeshByString("mallet");
 }
 
 #include "ActionEvent.h"
@@ -77,10 +87,10 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };
 
-		Paint->DrawIndexed(&m_pGeometry->m_Vertices[0],
-			m_pGeometry->m_Vertices.size(),
-			&m_pGeometry->m_Indices[0],
-			m_pGeometry->m_Indices.size());
+		Paint->DrawIndexed(&m_pTable->m_Vertices[0],
+			m_pTable->m_Vertices.size(),
+			&m_pTable->m_Indices[0],
+			m_pTable->m_Indices.size());
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
@@ -89,7 +99,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 
 void CSGame::OnExit()
 {
-	SAFE_DELETE(m_pGeometry);
+	//SAFE_DELETE(m_pGeometry);
 	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 

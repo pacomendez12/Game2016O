@@ -3,17 +3,24 @@
 #include "Graphics\DXManager.h"
 #include "Graphics\DXBasicPainter.h"
 #include "Graphics\FX.h"
+#include "Graphics\Mesh.h"
 #include "Sound\SndFactory.h"
 #include "Sound\SndManager.h"
 #include "Sound\SndControl.h"
 #include "Sound\SndFx.h"
 #include "Input\InputManager.h"
 #include "NetProcessor.h"
+#include <unordered_map>
+#include <string>
+
 
 #define MAIN ((CSMain*)m_pSMOwner->GetObjectByID(CLSID_CSMain))
 #define CLSID_CSMain 0x0dccd3ed
 
 #define INPUT_EVENT 0x12345678
+
+
+#define MESHES_NUMBER 2
 
 class CInputProcessor;
 class CInputEvent :public CEventBase
@@ -45,14 +52,39 @@ public:
 	CNetProcessor *m_pNetProcessor;
 	CFX *m_FX;
 
+
 	bool        m_bInitializationCorrect;
 	unsigned long GetClassID() { return CLSID_CSMain; }
 	const char* GetClassString() { return "CSMain"; }
 	CSMain();
 	virtual ~CSMain();
+
+	inline bool AreModelsLoaded() { return m_bMedelsLoaded; }
+	short GetModelsLoadingPercentage();
+	CMesh * GetMeshByString(std::string sMesh);
+
+	static DWORD CSMain::LoaderThread(LPVOID obj);
 protected:
 	void OnEntry(void);
 	unsigned long OnEvent(CEventBase* pEvent);
 	void OnExit(void);
+
+private:
+	// data
+	bool	m_bMedelsLoaded;
+	CMesh *m_pGeometry;
+	std::unordered_map<std::string, CMesh *> m_mMeshes;
+	CRITICAL_SECTION m_csLock;
+	inline void Lock()
+	{
+		EnterCriticalSection(&m_csLock);
+	}
+	inline void Unlock()
+	{
+		LeaveCriticalSection(&m_csLock);
+	}
+
+	void LoadModels();
+
 };
 

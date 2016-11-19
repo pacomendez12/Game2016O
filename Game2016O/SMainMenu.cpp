@@ -155,7 +155,7 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 		CActionEvent* pInput = (CActionEvent*)pEvent;
 		if (JOY_BUTTON_A_PRESSED == pInput->m_nAction)
 		{
-			std::cout << "recibi = " << pInput->m_nAction << std::endl;
+			//std::cout << "recibi = " << pInput->m_nAction << std::endl;
 			switch (m_nOption)
 			{
 			case JUGAR:

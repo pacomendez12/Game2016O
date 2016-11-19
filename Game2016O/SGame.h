@@ -9,7 +9,8 @@ public:
 	unsigned long GetClassID() { return CLSID_CSGame; }
 	const char* GetClassString() { return "CSGame"; }
 protected:
-	CMesh *m_pGeometry;
+	CMesh *m_pTable;
+	CMesh *m_pMallet;
 	void OnEntry();
 	unsigned long OnEvent(CEventBase* pEvent);
 	void OnExit();

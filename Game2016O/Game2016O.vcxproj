@@ -71,15 +71,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,7 +100,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,7 +114,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -124,7 +132,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,7 +150,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;dxguid.lib;d3dcompiler.lib;dsound.lib;dinput8.lib;WS2_32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionEvent.h" />
+    <ClInclude Include="BlenderImporter.h" />
     <ClInclude Include="DXTextRenderer.h" />
     <ClInclude Include="Game2016O.h" />
     <ClInclude Include="Graphics\DXBasicPainter.h" />
@@ -186,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionEvent.cpp" />
+    <ClCompile Include="BlenderImporter.cpp" />
     <ClCompile Include="DXTextRenderer.cpp" />
     <ClCompile Include="Game2016O.cpp" />
     <ClCompile Include="Graphics\DXBasicPainter.cpp" />
