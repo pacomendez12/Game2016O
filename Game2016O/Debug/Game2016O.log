@@ -1,3 +1,6 @@
-﻿  SMain.cpp
-  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.exe
-  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.pdb (Full PDB)
+﻿  SIntroduction.cpp
+c:\users\pacomendez\documents\visual studio 2015\projects\game2016o\game2016o\sintroduction.cpp(72): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\pacomendez\documents\visual studio 2015\projects\game2016o\game2016o\sintroduction.cpp(79): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\pacomendez\documents\visual studio 2015\projects\game2016o\game2016o\sintroduction.cpp(83): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Game2016O.vcxproj -> C:\Users\pacomendez\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.exe
+  Game2016O.vcxproj -> C:\Users\pacomendez\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.pdb (Full PDB)

@@ -22,7 +22,7 @@ void CSIntroduction::OnEntry()
 	m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\FFX.wav", SND_BACKGROUND);
 	if (m_pSndBackground)
 		m_pSndBackground->Play(false);
-	SetTimer(MAIN->m_hWnd, 1, 2000, NULL);
+	SetTimer(MAIN->m_hWnd, 1, 5000, NULL);
 	SetTimer(MAIN->m_hWnd, 2, 1000, NULL);
 	fflush(stdout);
 }
