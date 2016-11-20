@@ -11,21 +11,11 @@
 void CSGame::OnEntry()
 {
 	printf("CSGame::OnEntry()\n"); fflush(stdout);
-	//projection Matrix
-	MAIN->m_pDXPainter->m_Params.Projection = PerspectiveWidthHeightLH(0.05, 0.05, 0.1, 100);
-	VECTOR4D EyePos = { 5, 5, 5, 1 };
-	VECTOR4D Target = { 0, 0, 0, 1 };
-	VECTOR4D Up = { 0, 1, 0, 0 };
-	MAIN->m_pDXPainter->m_Params.View = View(EyePos, Target, Up);
-	MAIN->m_pDXPainter->m_Params.World = Identity();
-	//creating mesh
-	//m_pGeometry = new CMesh;
-	//std::unique_ptr<CMesh> geometry = CBlenderImporter::ImportObject("..\\Assets\\table.blend");
-	//m_pGeometry = geometry.release();
-	//m_pGeometry->LoadSuzzane();
-	//std::cout << m_pGeometry->m_Vertices.size() << std:: endl;
 
-	// obteniendo los meshes
+	m_pCamera = new CCamera(MAIN->m_pDXPainter);
+	m_pCamera->ChangeView(CCamera::ViewMode::Top);
+	//m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
+
 	m_pTable = MAIN->GetMeshByString("table");
 	m_pMallet = MAIN->GetMeshByString("mallet");
 }
@@ -36,36 +26,51 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 	if (ACTION_EVENT == pEvent->m_ulEventType)
 	{
 		auto Action = (CActionEvent *)pEvent;
-		MATRIX4D Camera = FastInverse(MAIN->m_pDXPainter->m_Params.View);
-		VECTOR4D Pos, Dir;
-		MATRIX4D Orientation = Camera;
-		Orientation.vec[3] = { 0, 0, 0, 1 };
-		Pos = Camera.vec[3];
-		Dir = Camera.vec[2];
-		if (JOY_AXIS_RY == Action->m_nAction)
-		{	
+		float Stimulus;
+		switch (Action->m_nAction)
+		{
+		case JOY_AXIS_RX:
 			//Dead zone
-			float Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f: Action->m_fAxis);
-			Pos = Pos + Dir * Stimulus * 0.1;
-		}
+			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
+			if (Stimulus != 0.0)
+			{
+				//m_pCamera->MoveXAxe(Stimulus);
+				if (Stimulus > 0)
+					m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
+				else
+					m_pCamera->ChangeView(CCamera::ViewMode::PlayerB);
+				//std::cout << "hola1 " << Stimulus << std::endl;
+			}
+			break;
 
-		if (JOY_AXIS_LX == Action->m_nAction)
-		{
-			float Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
-			Orientation = Orientation * RotationAxis(Stimulus * 0.01, Camera.vec[1]); //sobre el eje y
-		}
+		case JOY_AXIS_RY:
+			//Dead zone
+			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
+			if (Stimulus != 0.0)
+			{
+				//m_pCamera->MoveZAxe(Stimulus);
+				m_pCamera->ChangeView(CCamera::ViewMode::Top);
+				//std::cout << "hola1 " << Stimulus << std::endl;
+			}
+			break;
 
-		if (JOY_AXIS_LY == Action->m_nAction)
-		{
-			float Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis * -1);
-			Orientation = Orientation * RotationAxis(Stimulus * 0.01, Camera.vec[0]); //sobre el eje x
+		case JOY_AXIS_LX:
+			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
+			if (Stimulus != 0.0)
+			{
+				m_pCamera->RotateXAxe(Stimulus);
+				//std::cout << "hola2 " << Stimulus << std::endl;
+			}
+			break;
+		case JOY_AXIS_LY:
+			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis * -1);
+			if (Stimulus != 0.0)
+			{
+				m_pCamera->RotateYAxe(Stimulus);
+				//std::cout << "hola3 " << Stimulus << std::endl;
+			}
+			break;
 		}
-		
-		Camera.vec[0] = Orientation.vec[0];
-		Camera.vec[1] = Orientation.vec[1];
-		Camera.vec[2] = Orientation.vec[2];
-		Camera.vec[3] = Pos;
-		MAIN->m_pDXPainter->m_Params.View = Orthogonalize(FastInverse(Camera));
 	}
 	if (APP_LOOP == pEvent->m_ulEventType)
 	{
@@ -74,7 +79,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->SetRenderTarget(DXManager->GetMainRTV(), //Backbuffer
 			DXManager->GetMainDSV()); //ZBuffer
 
-		VECTOR4D DeepBlue = { 0.2, 0.2, 0.7, 0 };
+		VECTOR4D DeepBlue = { 0.9, 0.9, 0.9, 0 };
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
 					D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
@@ -100,11 +105,13 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 void CSGame::OnExit()
 {
 	//SAFE_DELETE(m_pGeometry);
+	SAFE_DELETE(m_pCamera)
 	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 
 CSGame::CSGame()
 {
+	m_pCamera = nullptr;
 }
 
 

@@ -13,7 +13,7 @@ const char *g_cszMeshesNames[]{
 };
 
 const char *g_cszMeshesFileNames[]{
-	"table.blend", "mallet.blend"
+	"monkey.blend", "mallet.blend"
 };
 
 
@@ -48,11 +48,18 @@ CSMain::~CSMain()
 
 short CSMain::GetModelsLoadingPercentage()
 {
+	Lock();
 	return AreModelsLoaded()? 100 : 0;
+	Unlock();
 }
 
 CMesh *CSMain::GetMeshByString(std::string sMesh)
 {
+	if (!AreModelsLoaded())
+	{
+		LoadModels();
+	}
+
 	Lock();
 	auto fnd = m_mMeshes.find(sMesh);
 	return m_mMeshes.end() == fnd ? nullptr : fnd->second;
@@ -214,6 +221,7 @@ void CSMain::OnExit(void)
 DWORD CSMain::LoaderThread(LPVOID obj)
 {
 	CSMain *csmain = (CSMain *)obj;
+	LockS(csmain);
 	std::cout << "Iniciando el hilo cargador de meshes..." << std::endl;
 	for (int i = 0; i < MESHES_NUMBER; ++i)
 	{
@@ -224,6 +232,8 @@ DWORD CSMain::LoaderThread(LPVOID obj)
 
 		std::cout << "Mesh " << g_cszMeshesNames[i] << " has " << ptrMesh->m_Vertices.size() << std::endl;
 	}
+	csmain->m_bMedelsLoaded = true;
+	UnlockS(csmain);
 	return 0;
 }
 
@@ -231,9 +241,7 @@ void CSMain::LoadModels()
 {
 	if (!AreModelsLoaded())
 	{
-		Lock();
 		DWORD dwThreadID;
 		CreateThread(nullptr, 4096, (LPTHREAD_START_ROUTINE)CSMain::LoaderThread, this, 0, &dwThreadID);
-		Unlock();
 	}
 }

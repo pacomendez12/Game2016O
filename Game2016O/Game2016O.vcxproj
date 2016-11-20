@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="ActionEvent.h" />
     <ClInclude Include="BlenderImporter.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="DXTextRenderer.h" />
     <ClInclude Include="Game2016O.h" />
     <ClInclude Include="Graphics\DXBasicPainter.h" />
@@ -196,6 +197,7 @@
   <ItemGroup>
     <ClCompile Include="ActionEvent.cpp" />
     <ClCompile Include="BlenderImporter.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DXTextRenderer.cpp" />
     <ClCompile Include="Game2016O.cpp" />
     <ClCompile Include="Graphics\DXBasicPainter.cpp" />

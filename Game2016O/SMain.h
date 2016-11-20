@@ -59,7 +59,13 @@ public:
 	CSMain();
 	virtual ~CSMain();
 
-	inline bool AreModelsLoaded() { return m_bMedelsLoaded; }
+	inline bool AreModelsLoaded() { 
+		bool result;
+		Lock();
+		result = m_bMedelsLoaded;
+		Unlock();
+		return result;
+	}
 	short GetModelsLoadingPercentage();
 	CMesh * GetMeshByString(std::string sMesh);
 
@@ -75,13 +81,28 @@ private:
 	CMesh *m_pGeometry;
 	std::unordered_map<std::string, CMesh *> m_mMeshes;
 	CRITICAL_SECTION m_csLock;
-	inline void Lock()
+	inline void Lock(CSMain * obj = nullptr)
 	{
-		EnterCriticalSection(&m_csLock);
+		if (!obj)
+			obj = this;
+		EnterCriticalSection(&obj->m_csLock);
 	}
-	inline void Unlock()
+	inline void Unlock(CSMain * obj = nullptr)
 	{
-		LeaveCriticalSection(&m_csLock);
+		if (!obj)
+			obj = this;
+		LeaveCriticalSection(&obj->m_csLock);
+	}
+
+	inline static void LockS(CSMain * obj = nullptr)
+	{
+		if (obj)
+			obj->Lock();
+	}
+	inline static void UnlockS(CSMain * obj = nullptr)
+	{
+		if (obj)
+			obj->Unlock(obj);
 	}
 
 	void LoadModels();

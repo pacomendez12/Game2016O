@@ -1,3 +1,7 @@
-﻿  SMain.cpp
+﻿  Camera.cpp
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\camera.cpp(20): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\camera.cpp(55): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\camera.cpp(69): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\camera.cpp(84): warning C4305: 'argument': truncation from 'double' to 'float'
   Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.exe
   Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.pdb (Full PDB)
