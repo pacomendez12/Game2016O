@@ -30,8 +30,7 @@ CSMain::CSMain()
 	m_FX = nullptr;
 
 	InitializeCriticalSection(&m_csLock);
-	// cargar los modelos asyncronamente.
-	LoadModels();
+	
 }
 
 
@@ -95,6 +94,9 @@ void CSMain::OnEntry(void)
 	{
 		printf("BAD ):...\n"); fflush(stdout);
 	}
+
+	
+
 	printf("Sound init...\n"); fflush(stdout);
 	CSndFactory* pFactory = new CSndFactory();
 	m_pSndManager=(CSndManager*)pFactory->CreateObject(L"CSndManager");
@@ -121,6 +123,10 @@ void CSMain::OnEntry(void)
 	{
 		printf("OK :)... \n");
 	}
+
+	// cargar los modelos asyncronamente una vez que tegamos video y audio
+	// funcionando.
+	LoadModels();
 
 	printf("Initializing network engine...");
 	fflush(stdout);
