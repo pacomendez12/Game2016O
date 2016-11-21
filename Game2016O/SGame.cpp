@@ -86,7 +86,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		DXManager->GetContext()->ClearRenderTargetView(DXManager->GetMainRTV(), (float *)&DeepBlue);
 
 		Paint->m_Params.Lights[0].Type = LIGHT_DIRECTIONAL;
-		Paint->m_Params.Lights[0].Direction = { 0, -1, 0, 0 };
+		Paint->m_Params.Lights[0].Direction = { 0, 1, 0, 0 };
 		Paint->m_Params.Lights[0].Diffuse = { 1, 1, 1, 1 };
 		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };

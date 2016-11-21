@@ -13,7 +13,7 @@ const char *g_cszMeshesNames[]{
 };
 
 const char *g_cszMeshesFileNames[]{
-	"monkey.blend", "mallet.blend"
+	"table.blend", "mallet.blend"
 };
 
 

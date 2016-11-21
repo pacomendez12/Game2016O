@@ -71,8 +71,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\pacomendez\Documents\Visual Studio 2015\Projects\Game2016O\third party\include;C:\Users\pacomendez\Documents\Visual Studio 2015\Projects\Game2016O\third party;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\pacomendez\Documents\Visual Studio 2015\Projects\Game2016O\third party;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\third party;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
