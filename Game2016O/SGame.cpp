@@ -11,13 +11,24 @@
 void CSGame::OnEntry()
 {
 	printf("CSGame::OnEntry()\n"); fflush(stdout);
+	
+	scenario = new Scenario();
 
 	m_pCamera = new CCamera(MAIN->m_pDXPainter);
 	m_pCamera->ChangeView(CCamera::ViewMode::Default);
 	//m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
 
-	m_pTable = MAIN->GetMeshByString("esfera");
-	m_pMallet = MAIN->GetMeshByString("casa");
+	//m_pMallet = MAIN->GetMeshByString("mallet");
+	//m_pTable = MAIN->GetMeshByString("table");
+
+	ScenarioObject *so_mallet = new ScenarioObject(scenario->getNewScenarioObjectId(),
+		1, MAIN->GetMeshByString("mallet"), 8, 8, 0);
+	ScenarioObject *so_table = new ScenarioObject(scenario->getNewScenarioObjectId(), MAIN->GetMeshByString("table"));
+	so_table->setScale(0.2);
+
+	// Add elements to scenario
+	scenario->addElementToScenario(so_mallet);
+	scenario->addElementToScenario(so_table);
 }
 
 #include "ActionEvent.h"
@@ -72,6 +83,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			break;
 		}
 	}
+
 	if (APP_LOOP == pEvent->m_ulEventType)
 	{
 		auto Paint = MAIN->m_pDXPainter;
@@ -79,12 +91,15 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->SetRenderTarget(DXManager->GetMainRTV(), //Backbuffer
 			DXManager->GetMainDSV()); //ZBuffer
 
+		// Fondo
 		VECTOR4D DeepBlue = { 0.2, 0.2, 0.7, 0 };
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
 					D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
+		// Configuras el color de fondo
 		DXManager->GetContext()->ClearRenderTargetView(DXManager->GetMainRTV(), (float *)&DeepBlue);
 
+		// Luces
 		Paint->m_Params.Lights[0].Type = LIGHT_DIRECTIONAL;
 		//Paint->m_Params.Lights[0].Type = LIGHT_ON;
 
@@ -94,10 +109,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };
 
-		Paint->DrawIndexed(&m_pTable->m_Vertices[0],
-			m_pTable->m_Vertices.size(),
-			&m_pTable->m_Indices[0],
-			m_pTable->m_Indices.size());
+		scenario->paintScenarioObjects(Paint);
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
@@ -115,7 +127,6 @@ CSGame::CSGame()
 {
 	m_pCamera = nullptr;
 }
-
 
 CSGame::~CSGame()
 {

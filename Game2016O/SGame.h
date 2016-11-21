@@ -2,6 +2,7 @@
 #include "HSM\StateBase.h"
 #include "Graphics\Mesh.h"
 #include "Camera.h"
+#include "Scenario.h"
 
 #define CLSID_CSGame 0x33221100
 class CSGame :
@@ -14,6 +15,7 @@ protected:
 	CMesh *m_pTable;
 	CMesh *m_pMallet;
 	CCamera *m_pCamera;
+	Scenario *scenario;
 	void OnEntry();
 	unsigned long OnEvent(CEventBase* pEvent);
 	void OnExit();
