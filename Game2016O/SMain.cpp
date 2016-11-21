@@ -9,11 +9,11 @@
 #include "InputProcessor.h"
 
 const char *g_cszMeshesNames[]{
-	"table", "mallet"
+	"casa", "esfera"
 };
 
 const char *g_cszMeshesFileNames[]{
-	"table.blend", "mallet.blend"
+	"casa.blend", "esfera.blend"
 };
 
 

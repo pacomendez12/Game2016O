@@ -175,7 +175,8 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 		if (JOY_AXIS_UP_PRESSED == pInput->m_nAction)
 		{	
 			ActivateButton(m_nOption > 0 ? m_nOption - 1 : NUMBER_BUTTONS - 1);
-		} else if (JOY_AXIS_DOWN_PRESSED == pInput->m_nAction)
+		} 
+		else if (JOY_AXIS_DOWN_PRESSED == pInput->m_nAction)
 		{
 			ActivateButton(m_nOption < (NUMBER_BUTTONS - 1)? m_nOption + 1 : 0);
 		}
