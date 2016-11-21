@@ -15,7 +15,7 @@ void CSGame::OnEntry()
 	scenario = new Scenario();
 
 	m_pCamera = new CCamera(MAIN->m_pDXPainter);
-	m_pCamera->ChangeView(CCamera::ViewMode::Top);
+	m_pCamera->ChangeView(CCamera::ViewMode::Default);
 	//m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
 
 	//m_pMallet = MAIN->GetMeshByString("mallet");
@@ -45,11 +45,11 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
 			if (Stimulus != 0.0)
 			{
-				//m_pCamera->MoveXAxe(Stimulus);
-				if (Stimulus > 0)
+				m_pCamera->MoveXAxe(Stimulus);
+				/*if (Stimulus > 0)
 					m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
 				else
-					m_pCamera->ChangeView(CCamera::ViewMode::PlayerB);
+					m_pCamera->ChangeView(CCamera::ViewMode::PlayerB);*/
 				//std::cout << "hola1 " << Stimulus << std::endl;
 			}
 			break;
@@ -59,8 +59,8 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
 			if (Stimulus != 0.0)
 			{
-				//m_pCamera->MoveZAxe(Stimulus);
-				m_pCamera->ChangeView(CCamera::ViewMode::Top);
+				m_pCamera->MoveZAxe(Stimulus);
+				//m_pCamera->ChangeView(CCamera::ViewMode::Top);
 				//std::cout << "hola1 " << Stimulus << std::endl;
 			}
 			break;
@@ -92,8 +92,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			DXManager->GetMainDSV()); //ZBuffer
 
 		// Fondo
-		VECTOR4D DeepBlue = { 0.9, 0.9, 0.9, 0 };
-		
+		VECTOR4D DeepBlue = { 0.2, 0.2, 0.7, 0 };
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
 					D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
@@ -102,8 +101,10 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 
 		// Luces
 		Paint->m_Params.Lights[0].Type = LIGHT_DIRECTIONAL;
-		Paint->m_Params.Lights[0].Direction = { 0, 1, 0, 0 };
-		Paint->m_Params.Lights[0].Diffuse = { 1, 1, 1, 1 };
+		//Paint->m_Params.Lights[0].Type = LIGHT_ON;
+
+		Paint->m_Params.Lights[0].Direction = { -2, 0, 0, 0 };
+		Paint->m_Params.Lights[0].Diffuse = { 0.1f, 0.1f, 0.1f, 1 };
 		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };

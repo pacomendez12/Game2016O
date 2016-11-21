@@ -8,9 +8,9 @@ public:
 	~CCamera();
 	
 	enum class ViewMode {
-		PlayerA, PlayerB, Top
+		Default, PlayerA, PlayerB, Top
 	};
-	const ViewMode m_cDefaultView = ViewMode::PlayerA;
+	const ViewMode m_cDefaultView = ViewMode::Default;
 	ViewMode m_currentView;
 
 	void ChangeView(ViewMode view);

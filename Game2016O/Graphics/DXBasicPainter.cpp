@@ -13,7 +13,7 @@ CDXBasicPainter::CDXBasicPainter(CDXManager* pOwner)
 	m_Params.World = m_Params.View = m_Params.Projection = Identity();
 	VECTOR4D Zero = { 0, 0, 0, 0 };
 	m_Params.Brightness = Zero;
-	MATERIAL MatDef = {
+	/*MATERIAL MatDef = {
 		{ 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 },
 		{ 0, 0, 0, 0 }, { 60, 0, 0, 0 }};
 	m_Params.Material = MatDef;
@@ -28,7 +28,80 @@ CDXBasicPainter::CDXBasicPainter(CDXManager* pOwner)
 	{ 1, 0, 0, 0 } };
 	m_Params.Lights[0] = LightDef;
 	m_pDrawLH = NULL;
-	m_pDrawRH = NULL;
+	m_pDrawRH = NULL;*/
+
+
+
+	MATERIAL MatDef = {
+		{ 1,1,1,1 },  // Ambient
+		{ 1,1,1,1 },	// Diffuse
+		{ 1,1,1,1 },	// Specular
+		{ 0 ,0,0,0 },	// Emissive
+		{ 100,0,0,0 }  // Power
+	};
+	m_Params.Material = MatDef;
+	memset(m_Params.Lights, 0, sizeof(m_Params.Lights));
+
+	LIGHT LightDef = {
+		{ LIGHT_ON, LIGHT_DIRECTIONAL,0,0 },
+		{ 0.1,0.1,0.1,0 },
+		{ 0.5,0.5,0.5,0.5 },
+		{ 1,1,1,0 },
+		{ 1,0,0,0 },
+		{ 0,0,0,1 },
+		{ 0,0,-1,0 },
+		{ 1,0,0,0 }
+	};
+
+	LIGHT LightDef2 = {
+		{ LIGHT_ON, LIGHT_SPOT,0,0 },  // Flags
+		{ 0.1,0.1,0.1,0 },				// Ambient
+		{ 5,5,5,5 },			// Diffuse
+		{ 5,5,5,0 },					// Specular
+		{ 1,.05,0.05,0 },					// Attenuation
+		{ 0,0,1,1 },					// Position
+		{ 0,0,0,0 },					// Direction
+		{ 30,0,0,0 }						// Factors
+	};
+
+	LIGHT LightDef3 = {
+		{ LIGHT_ON, LIGHT_POINT,0,0 },	// Flags
+		{ 0.1,0.1,0.1,0 },				// Ambient
+		{ 1,1,1,1 },					// Diffuse
+		{ 1,1,0.7,0 },					// Specular
+		{ 1,0,0,0 },					// Attenuation
+		{ 3,3,3,1 },					// Position
+		{ -.5773,-.5773,-.5773,0 },		// Direction
+		{ 30,0,0,0 }						// Factors
+	};
+
+	LIGHT LightDef4 = {
+		{ 0, LIGHT_POINT,0,0 },	// Flags
+		{ 0.1,0.1,0.1,0 },				// Ambient
+		{ 1,1,1,1 },					// Diffuse
+		{ 1,1,0.7,0 },					// Specular
+		{ 1,0,0,0 },					// Attenuation
+		{ 3,3,-3,1 },					// Position
+		{ -.5773,-.5773,.5773,0 },		// Direction
+		{ 30,0,0,0 }						// Factors
+	};
+
+	LIGHT LightDef5 = {
+		{ 0, LIGHT_POINT,0,0 },	// Flags
+		{ 0.1,0.1,0.1,0 },				// Ambient
+		{ 1,1,1,1 },					// Diffuse
+		{ 1,1,0.7,0 },					// Specular
+		{ 1,0,0,0 },					// Attenuation
+		{ 3,-3,3,1 },					// Position
+		{ -.5773,.5773,-.5773,0 },		// Direction
+		{ 30,0,0,0 }						// Factors
+	};
+
+	m_Params.Lights[0] = LightDef;
+	m_Params.Lights[1] = LightDef2;
+	m_Params.Lights[2] = LightDef3;
+	m_Params.Lights[3] = LightDef4;
+	m_Params.Lights[4] = LightDef5;
 }
 
 void CDXBasicPainter::Uninitialize()
