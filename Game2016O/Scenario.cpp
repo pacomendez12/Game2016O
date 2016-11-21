@@ -24,7 +24,7 @@ void Scenario::paintScenarioObjects(CDXBasicPainter* m_pDXPainter)
 		ScenarioObject *scenarioObject = scenarioObjects[i];
 		CMesh* currentMesh = scenarioObject->getObjectMesh();
 
-		MATRIX4D scaling = Scaling(scenarioObject->getScale(), scenarioObject->getScale(), 0);
+		MATRIX4D scaling = Scaling(scenarioObject->getScale(), scenarioObject->getScale(), scenarioObject->getScale());
 		MATRIX4D traslation = Translation(scenarioObject->getX(), scenarioObject->getY(), scenarioObject->getZ());
 
 		// Object in it's right position and size

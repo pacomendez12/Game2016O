@@ -19,11 +19,11 @@ void CSGame::OnEntry()
 	//m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
 
 	//m_pMallet = MAIN->GetMeshByString("mallet");
-	//m_pTable = MAIN->GetMeshByString("table");
+	//m_pTable = MAIN->GetMeshByString("casa");
 
 	ScenarioObject *so_mallet = new ScenarioObject(scenario->getNewScenarioObjectId(),
-		1, MAIN->GetMeshByString("mallet"), 8, 8, 0);
-	ScenarioObject *so_table = new ScenarioObject(scenario->getNewScenarioObjectId(), MAIN->GetMeshByString("table"));
+		1, MAIN->GetMeshByString("esfera"), 1, 1, 0);
+	ScenarioObject *so_table = new ScenarioObject(scenario->getNewScenarioObjectId(), MAIN->GetMeshByString("casa"));
 	so_table->setScale(0.2);
 
 	// Add elements to scenario
@@ -101,15 +101,20 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 
 		// Luces
 		Paint->m_Params.Lights[0].Type = LIGHT_DIRECTIONAL;
-		//Paint->m_Params.Lights[0].Type = LIGHT_ON;
+		Paint->m_Params.Lights[0].Flags = LIGHT_ON;
 
-		Paint->m_Params.Lights[0].Direction = { -2, 0, 0, 0 };
-		Paint->m_Params.Lights[0].Diffuse = { 0.1f, 0.1f, 0.1f, 1 };
+		Paint->m_Params.Lights[0].Direction = { -1, 0, 0};
+		Paint->m_Params.Lights[0].Diffuse = { 1, 1, 1, 0 };
+		Paint->m_Params.Lights[0].Position = { -100, 0, 0 , 0};
 		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };
 
 		scenario->paintScenarioObjects(Paint);
+		/*Paint->DrawIndexed(&m_pTable->m_Vertices[0],
+			m_pTable->m_Vertices.size(),
+			&m_pTable->m_Indices[0],
+			m_pTable->m_Indices.size());*/
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
