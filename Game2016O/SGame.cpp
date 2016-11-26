@@ -58,7 +58,11 @@ void CSGame::OnEntry()
 	m_pCamera = new CCamera(MAIN->m_pDXPainter);
 	m_pCamera->ChangeView(CCamera::ViewMode::Default);
 
-	start = false;
+	game = false;
+	userInteraction = false;
+
+	userSelectedBarn = 0;
+	greatestHensInBarn = 0;
 
 	createScenarioElements(TOTAL_HENS);
 }
@@ -69,65 +73,86 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 	if (ACTION_EVENT == pEvent->m_ulEventType)
 	{
 		auto Action = (CActionEvent *)pEvent;
-		float Stimulus;
-		switch (Action->m_nAction)
-		{
-		case JOY_AXIS_RX:
-			//Dead zone
-			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
-			if (Stimulus != 0.0)
-			{
-				m_pCamera->MoveXAxe(Stimulus);
-			}
-			break;
+		if (userInteraction) {
+			//cout << "User interaction enabled" << endl;
+			switch (Action->m_nAction) {
+			case JOY_AXIS_RX:
+				userSelectedBarn++;
+				break;
+			case JOY_BUTTON_B_PRESSED:
+				cout << "Button B pressed" << endl;
+				userSelectedBarn %= 4;
+				cout << "User selected Barn: " << userSelectedBarn << endl;
+				for (int i = 1; i < 5; i++) {
+					Barn *barn = dynamic_cast<Barn*>(staticScenario->getScenarioObect(i));
+					cout << barn->getHensInHouse() << endl;
+					if (barn->getHensInHouse() > greatestHensInBarn) {
+						greatestBarnId = barn->getObjectId();
+						greatestHensInBarn = barn->getHensInHouse();
+					}
+				}
+				cout << "GreatestBarn " << greatestBarnId << ":" << greatestHensInBarn << endl;
+				cout << "User selected Barn " << userSelectedBarn << endl;
 
-		case JOY_AXIS_RY:
-			//Dead zone
-			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
-			if (Stimulus != 0.0)
-			{
-				m_pCamera->MoveZAxe(Stimulus);
+				if (userSelectedBarn == greatestBarnId) {
+					cout << "GANASTE" << endl;
+				}
+				else {
+					cout << "PERDISTE!!1" << endl;
+				}
+				break;
+			case JOY_BUTTON_Y_PRESSED:
+				cout << "Button Y pressed" << endl;
+				break;
 			}
-			break;
-
-		case JOY_AXIS_LX:
-			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
-			if (Stimulus != 0.0)
-			{
-				m_pCamera->RotateXAxe(Stimulus);
-			}
-			break;
-		case JOY_AXIS_LY:
-			Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis * -1);
-			if (Stimulus != 0.0)
-			{
-				m_pCamera->RotateYAxe(Stimulus);
-			}
-			break;
-
-		case JOY_BUTTON_A_PRESSED: {
-			cout << "Button A pressed" << endl;
-			cout << start << endl;
-			map<int, ScenarioObject *> objects = dynamicScenario->getScenarioObjects();
-			map<int, ScenarioObject *>::iterator iterator;
-			for (iterator = objects.begin(); iterator != objects.end(); iterator++) {
-				ScenarioObject *scenarioObject = iterator->second;
-				scenarioObject->setPaint(true);
-			}
-			if (!start)
-				start = true;
-			else
-				start = false;
-			cout << start << endl;
 		}
-			break;
-		case JOY_BUTTON_B_PRESSED:
-			cout << "Button pressed B" << endl;
-			for (int i = 1; i < 5; i++) {
-				Barn *barn = dynamic_cast<Barn*>(staticScenario->getScenarioObect(i));
-				cout << barn->getHensInHouse() << endl;
+		else {
+			float Stimulus;
+			switch (Action->m_nAction)
+			{
+			case JOY_AXIS_RX:
+				//Dead zone
+				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
+				if (Stimulus != 0.0){
+					m_pCamera->MoveXAxe(Stimulus);
+				}
+				break;
+			case JOY_AXIS_RY:
+				//Dead zone
+				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
+				if (Stimulus != 0.0){
+					m_pCamera->MoveZAxe(Stimulus);
+				}
+				break;
+			case JOY_AXIS_LX:
+				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
+				if (Stimulus != 0.0){
+					m_pCamera->RotateXAxe(Stimulus);
+				}
+				break;
+			case JOY_AXIS_LY:
+				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis * -1);
+				if (Stimulus != 0.0){
+					m_pCamera->RotateYAxe(Stimulus);
+				}
+				break;
+			case JOY_BUTTON_A_PRESSED: {
+				cout << "Button A pressed" << endl;
+				cout << game << endl;
+					map<int, ScenarioObject *> objects = dynamicScenario->getScenarioObjects();
+					map<int, ScenarioObject *>::iterator iterator;
+					for (iterator = objects.begin(); iterator != objects.end(); iterator++) {
+						ScenarioObject *scenarioObject = iterator->second;
+						scenarioObject->setPaint(true);
+					}
+					if (!game)
+						game = true;
+					else
+						game = false;
+					cout << game << endl;
 			}
-			break;
+				break;
+			}
 		}
 	}
 
@@ -158,7 +183,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };
 
 		// Moving elements in scenario
-		if (start) {
+		if (game) {
 			map<int, ScenarioObject *> scenarioObjects = dynamicScenario->getScenarioObjects();
 			for (it = scenarioObjects.begin(); it != scenarioObjects.end(); it++) {
 				hen = dynamic_cast<Hen*>(it->second);
@@ -168,15 +193,14 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 					removeHens.push_back(hen->getObjectId());
 				}
 			}
+			dynamicScenario->paintScenarioObjects(Paint);
+			manageScenarioObjectUpdates();
 		}
 
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
-		dynamicScenario->paintScenarioObjects(Paint);
 
 		DXManager->GetSwapChain()->Present(1, 0);
-
-		manageScenarioObjectUpdates();
 	}
 	return __super::OnEvent(pEvent);
 }
@@ -202,6 +226,11 @@ void CSGame::manageScenarioObjectUpdates(){
 
 	incrementInBarns.clear();
 	removeHens.clear();
+
+	if (dynamicScenario->getScenarioObjects().empty()) {
+		game = false;
+		userInteraction = true;
+	}
 }
 
 CSGame::CSGame()

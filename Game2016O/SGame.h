@@ -27,7 +27,8 @@ protected:
 	CCamera *m_pCamera;
 	Scenario *staticScenario;
 	Scenario *dynamicScenario;
-	bool start;
+	bool game;
+	bool userInteraction;
 	Hen *hen;
 	vector<int> incrementInBarns;
 	vector<int> removeHens;
@@ -42,6 +43,11 @@ protected:
 	// Game actions, control and configuration
 	void manageScenarioObjectUpdates();
 	void createScenarioElements(int totalSpheres);
+
+	// User control selection and score
+	int greatestHensInBarn;
+	int greatestBarnId;
+	int userSelectedBarn;
 
 public:
 	CSGame();
