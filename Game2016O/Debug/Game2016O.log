@@ -1,6 +1,12 @@
 ﻿  SGame.cpp
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(82): warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(82): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\sgame.cpp(84): warning C4244: 'argument': conversion from 'double' to 'UINT8', possible loss of data
-  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.exe
-  Game2016O.vcxproj -> C:\Users\paco\Documents\Visual Studio 2015\Projects\Game2016O\Debug\Game2016O.pdb (Full PDB)
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(31): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(60): warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(60): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(62): warning C4244: 'argument': conversion from 'double' to 'UINT8', possible loss of data
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(172): warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(172): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(174): warning C4244: 'argument': conversion from 'double' to 'UINT8', possible loss of data
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(248): warning C4018: '<': signed/unsigned mismatch
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(252): warning C4018: '<': signed/unsigned mismatch
+  Game2016O.vcxproj -> C:\Users\nvcruzhe\Desktop\githubRepos\Game2016O\Debug\Game2016O.exe
+  Game2016O.vcxproj -> C:\Users\nvcruzhe\Desktop\githubRepos\Game2016O\Debug\Game2016O.pdb (Full PDB)

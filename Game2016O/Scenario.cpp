@@ -4,12 +4,13 @@
 
 int Scenario::getNewScenarioObjectId()
 {
-	return scenarioObjects.size();
+	idIndex++;
+	return idIndex;
 }
 
-void Scenario::addElementToScenario(ScenarioObject *scenarioObject)
+void Scenario::addElementToScenario(int scenarioObjectId, ScenarioObject * scenarioObject)
 {
-	scenarioObjects.push_back(scenarioObject);
+	scenarioObjects[scenarioObjectId] = scenarioObject;
 }
 
 void Scenario::removeElementsFromScenario()
@@ -19,27 +20,44 @@ void Scenario::removeElementsFromScenario()
 
 void Scenario::paintScenarioObjects(CDXBasicPainter* m_pDXPainter)
 {
-	int totalScenarioObjects = scenarioObjects.size();
-	for (int i = 0; i < totalScenarioObjects; i++) {
-		ScenarioObject *scenarioObject = scenarioObjects[i];
-		CMesh* currentMesh = scenarioObject->getObjectMesh();
+	for (it = scenarioObjects.begin(); it != scenarioObjects.end(); it++) {
+		ScenarioObject *scenarioObject = it->second;
+		if (scenarioObject->getPaint()) {
+			CMesh* currentMesh = scenarioObject->getObjectMesh();
 
-		MATRIX4D scaling = Scaling(scenarioObject->getScale(), scenarioObject->getScale(), scenarioObject->getScale());
-		MATRIX4D traslation = Translation(scenarioObject->getX(), scenarioObject->getY(), scenarioObject->getZ());
+			MATRIX4D scaling = Scaling(scenarioObject->getScale(), scenarioObject->getScale(), scenarioObject->getScale());
+			MATRIX4D traslation = Translation(scenarioObject->getX(), scenarioObject->getY(), scenarioObject->getZ());
 
-		// Object in it's right position and size
-		m_pDXPainter->m_Params.World = traslation * scaling;
-			
-		// Painter drawing current Mesh
-		m_pDXPainter->DrawIndexed(&currentMesh->m_Vertices[0],
-			currentMesh->m_Vertices.size(),
-			&currentMesh->m_Indices[0],
-			currentMesh->m_Indices.size());
+			// Object in it's right position and size
+			m_pDXPainter->m_Params.World = traslation * scaling;
+
+			// Painter drawing current Mesh
+			m_pDXPainter->DrawIndexed(&currentMesh->m_Vertices[0],
+				currentMesh->m_Vertices.size(),
+				&currentMesh->m_Indices[0],
+				currentMesh->m_Indices.size());
+		}
 	}
+}
+
+void Scenario::removeScenarioObjectById(int scenarioObjectId)
+{
+	scenarioObjects.erase(scenarioObjectId);
+}
+
+ScenarioObject * Scenario::getScenarioObect(int scenarioObjectId)
+{
+	return scenarioObjects[scenarioObjectId];
+}
+
+map<int, ScenarioObject*> Scenario::getScenarioObjects()
+{
+	return scenarioObjects;
 }
 
 Scenario::Scenario()
 {
+	idIndex = 0;
 }
 
 

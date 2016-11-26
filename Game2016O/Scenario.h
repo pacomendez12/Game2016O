@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 #include "ScenarioObject.h"
 
@@ -10,11 +11,16 @@ class Scenario
 {
 public:
 	int getNewScenarioObjectId();
-	void addElementToScenario(ScenarioObject *scenarioObject);
+	void addElementToScenario(int scenarioObjectId, ScenarioObject *scenarioObject);
 	void removeElementsFromScenario();
 	void paintScenarioObjects(CDXBasicPainter* m_pDXPainter);
+	void removeScenarioObjectById(int scenarioObjectId);
+	ScenarioObject* getScenarioObect(int scenarioObjectId);
+	map<int, ScenarioObject *> getScenarioObjects();
 protected:
-	vector<ScenarioObject *> scenarioObjects;
+	map<int, ScenarioObject *> scenarioObjects;
+	map<int, ScenarioObject *>::iterator it;
+	int idIndex;
 public:
 	Scenario();
 	virtual ~Scenario();

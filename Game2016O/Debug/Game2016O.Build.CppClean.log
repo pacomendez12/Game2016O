@@ -1,36 +1,52 @@
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\vc140.pdb
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\vc140.idb
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\game2016o.pch
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\stdafx.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\eventbase.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\eventlistener.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\eventwin32.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\objectbase.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\objectcommand.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\objectstock.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\statebase.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\statemachinemanager.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\inputprocessor.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\inputmanager.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\netprocessor.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\sintroduction.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\smainmenu.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\sndcontrol.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\sndfactory.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\sndfx.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\sndmanager.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\sndobject.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\actionevent.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\camera.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\dxtextrenderer.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\game2016o.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\dxbasicpainter.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\dxmanager.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\fx.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\imagebmp.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\matrix4d.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\mesh.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\meshmathsurface.obj
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\game2016o.tlog\cl.command.1.tlog
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\game2016o.tlog\cl.read.1.tlog
-c:\users\paco\documents\visual studio 2015\projects\game2016o\game2016o\debug\game2016o.tlog\cl.write.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.pch
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\vc140.pdb
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\vc140.idb
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\stdafx.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\eventlistener.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\eventwin32.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\objectbase.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\objectcommand.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\objectstock.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\statebase.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\statemachinemanager.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\inputprocessor.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\inputmanager.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\netprocessor.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\scenarioobject.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\sgame.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\sintroduction.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\smain.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\smainmenu.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\sndcontrol.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\sndfactory.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\sndfx.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\sndmanager.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\sndobject.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\actionevent.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\blenderimporter.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\camera.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\dxtextrenderer.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\dxbasicpainter.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\dxmanager.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\fx.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\imagebmp.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\matrix4d.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\mesh.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\meshmathsurface.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\eventbase.obj
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.res
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\debug\game2016o.pdb
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\cl.command.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\cl.read.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\cl.write.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\link-cvtres.read.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\link-cvtres.write.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\link-rc.read.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\link-rc.write.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\link.command.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\link.read.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\link.write.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\rc.command.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\rc.read.1.tlog
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\debug\game2016o.tlog\rc.write.1.tlog
