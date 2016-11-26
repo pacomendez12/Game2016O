@@ -6,6 +6,7 @@
 #include "BlenderImporter.h"
 #include <memory>
 #include <iostream>
+#include "Graphics\ImageBMP.h"
 
 
 void CSGame::OnEntry()
@@ -13,10 +14,14 @@ void CSGame::OnEntry()
 	printf("CSGame::OnEntry()\n"); fflush(stdout);
 	
 	scenario = new Scenario();
-
 	m_pCamera = new CCamera(MAIN->m_pDXPainter);
 	m_pCamera->ChangeView(CCamera::ViewMode::Default);
 	//m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
+	CImageBMP* background =
+		CImageBMP::CreateBitmapFromFile("..\\Assets\\background.bmp", NULL);
+	ID3D11Texture2D* backgroundTexture = background->CreateTexture(MAIN->m_pDXManager);
+	CImageBMP::DestroyBitmap(background);
+	MAIN->m_pDXManager->GetDevice()->CreateShaderResourceView(backgroundTexture, NULL, &m_pSRVBackground);
 
 	//m_pMallet = MAIN->GetMeshByString("mallet");
 	//m_pTable = MAIN->GetMeshByString("casa");
@@ -92,9 +97,9 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			DXManager->GetMainDSV()); //ZBuffer
 
 		// Fondo
-		VECTOR4D DeepBlue = { 0.2, 0.2, 0.7, 0 };
+		VECTOR4D DeepBlue = { .2, .3, 4, 0 };
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
-					D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
+			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
 		// Configuras el color de fondo
 		DXManager->GetContext()->ClearRenderTargetView(DXManager->GetMainRTV(), (float *)&DeepBlue);
@@ -110,11 +115,39 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };
 
+		// Imagen de fondo
+		CDXBasicPainter::VERTEX Frame[4]
+		{
+			{ { -1,1, 0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
+			{ { 1, 1, 0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
+			{ { -1,-1,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
+			{ { 1,-1, 0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
+		};
+		unsigned long FrameIndex[6] = { 0,1,2,2,1,3 };
+		Paint->m_Params.Projection =
+		Paint->m_Params.View =
+		Paint->m_Params.World =
+		Identity();
+
+		MAIN->m_pDXManager->GetContext()->PSSetShaderResources(3, 1, &m_pSRVBackground);
+		Paint->m_Params.Flags = MAPPING_EMISSIVE | LIGHTING_DIFFUSE;
+		Paint->DrawIndexed(Frame, 4, FrameIndex, 6);
+
+		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
+			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
+
+#if 0
+		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
+			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
+									/*RotationZ(3.141592 / 4) * */ // Orientacion del texto
+			Translation(-1, 1, 0); // Posicion del text
+		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez");
+#endif
+
+		m_pCamera->ChangeView(CCamera::ViewMode::Default);
+		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
+		
 		scenario->paintScenarioObjects(Paint);
-		/*Paint->DrawIndexed(&m_pTable->m_Vertices[0],
-			m_pTable->m_Vertices.size(),
-			&m_pTable->m_Indices[0],
-			m_pTable->m_Indices.size());*/
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}

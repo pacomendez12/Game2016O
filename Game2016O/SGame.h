@@ -16,6 +16,7 @@ protected:
 	CMesh *m_pMallet;
 	CCamera *m_pCamera;
 	Scenario *scenario;
+	ID3D11ShaderResourceView* m_pSRVBackground;
 	void OnEntry();
 	unsigned long OnEvent(CEventBase* pEvent);
 	void OnExit();
