@@ -9,9 +9,10 @@
 #include "Barn.h"
 #include "Hen.h"
 #include "JumpingHen.h"
+#include "InputProcessor.h"
 
 #define CLSID_CSGame 0x33221100
-#define TOTAL_HENS 50
+#define TOTAL_HENS 100
 
 using namespace std;
 

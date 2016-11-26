@@ -15,10 +15,10 @@ void CSGame::createScenarioElements(int totalSpheres)
 
 	int newScenarioObjectId = 0;
 	
-	barnScenarioPositions[1] = new  ScenarioPosition(1.5, -7, 0);
-	barnScenarioPositions[2] = new  ScenarioPosition(0, -2, 0);
-	barnScenarioPositions[3] = new  ScenarioPosition(0, 2.25, 0);
-	barnScenarioPositions[4] = new  ScenarioPosition(1.5, 7, 0);
+	barnScenarioPositions[0] = new  ScenarioPosition(1.5, -7, 0);
+	barnScenarioPositions[1] = new  ScenarioPosition(0, -2, 0);
+	barnScenarioPositions[2] = new  ScenarioPosition(0, 2.25, 0);
+	barnScenarioPositions[3] = new  ScenarioPosition(1.5, 7, 0);
 
 	// Creating barns
 	for (int i = 0; i < 4; i++) {
@@ -33,8 +33,8 @@ void CSGame::createScenarioElements(int totalSpheres)
 	int x;
 	int y;
 	int steptsToTarget;
-	for (int i = 1; i < totalSpheres + 1; i++) {
-		barnId = rand() % 4 + 1;
+	for (int i = 0; i < totalSpheres; i++) {
+		barnId = rand() % 4;
 		x = rand() % 100 + 70;
 		y = rand() % 200 - 100;
 		steptsToTarget = rand() % 1000 + 500;
@@ -75,15 +75,30 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		auto Action = (CActionEvent *)pEvent;
 		if (userInteraction) {
 			//cout << "User interaction enabled" << endl;
+			float Stimulus;
 			switch (Action->m_nAction) {
-			case JOY_AXIS_RX:
+			case JOY_AXIS_RIGHT_PRESSED:
+				//cout << userSelectedBarn << endl;
 				userSelectedBarn++;
+				userSelectedBarn = userSelectedBarn % 4;
+				if (userSelectedBarn < 0) {
+					userSelectedBarn += 4;
+				}
+				//cout << userSelectedBarn << endl;
+				break;
+			case JOY_AXIS_LEFT_PRESSED:
+				//cout << userSelectedBarn << endl;
+				userSelectedBarn--;
+				userSelectedBarn = userSelectedBarn % 4;
+				if (userSelectedBarn < 0) {
+					userSelectedBarn += 4;
+				}
+				//cout << userSelectedBarn << endl;
 				break;
 			case JOY_BUTTON_B_PRESSED:
 				cout << "Button B pressed" << endl;
-				userSelectedBarn %= 4;
 				cout << "User selected Barn: " << userSelectedBarn << endl;
-				for (int i = 1; i < 5; i++) {
+				for (int i = 0; i < 4; i++) {
 					Barn *barn = dynamic_cast<Barn*>(staticScenario->getScenarioObect(i));
 					cout << barn->getHensInHouse() << endl;
 					if (barn->getHensInHouse() > greatestHensInBarn) {
@@ -230,6 +245,7 @@ void CSGame::manageScenarioObjectUpdates(){
 	if (dynamicScenario->getScenarioObjects().empty()) {
 		game = false;
 		userInteraction = true;
+		MAIN->m_pInputProcessor->SetJoysticMode(CInputProcessor::JoysticMode::KEYBOARD);
 	}
 }
 

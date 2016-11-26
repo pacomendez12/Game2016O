@@ -29,7 +29,7 @@ void Scenario::paintScenarioObjects(CDXBasicPainter* m_pDXPainter)
 			MATRIX4D traslation = Translation(scenarioObject->getX(), scenarioObject->getY(), scenarioObject->getZ());
 
 			// Object in it's right position and size
-			m_pDXPainter->m_Params.World = traslation * scaling;
+			m_pDXPainter->m_Params.World =  scaling * traslation;
 
 			// Painter drawing current Mesh
 			m_pDXPainter->DrawIndexed(&currentMesh->m_Vertices[0],
@@ -57,7 +57,7 @@ map<int, ScenarioObject*> Scenario::getScenarioObjects()
 
 Scenario::Scenario()
 {
-	idIndex = 0;
+	idIndex = -1;
 }
 
 
