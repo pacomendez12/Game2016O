@@ -55,7 +55,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 					m_pCamera->ChangeView(CCamera::ViewMode::PlayerA);
 				else
 					m_pCamera->ChangeView(CCamera::ViewMode::PlayerB);*/
-				//std::cout << "hola1 " << Stimulus << std::endl;
+				std::cout << "hola1 " << Stimulus << std::endl;
 			}
 			break;
 
@@ -124,10 +124,14 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			{ { 1,-1, 0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
 		};
 		unsigned long FrameIndex[6] = { 0,1,2,2,1,3 };
+
+		MATRIX4D p = Paint->m_Params.Projection;
+		MATRIX4D v = Paint->m_Params.View;
+		MATRIX4D w = Paint->m_Params.World;
+
 		Paint->m_Params.Projection =
 		Paint->m_Params.View =
-		Paint->m_Params.World =
-		Identity();
+		Paint->m_Params.World = Identity();
 
 		MAIN->m_pDXManager->GetContext()->PSSetShaderResources(3, 1, &m_pSRVBackground);
 		Paint->m_Params.Flags = MAPPING_EMISSIVE | LIGHTING_DIFFUSE;
@@ -136,15 +140,18 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
 			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
-#if 0
+//#if 0
 		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
 			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
-									/*RotationZ(3.141592 / 4) * */ // Orientacion del texto
+									/*RotationZ(3.141592 / 4) * */ // Orientacion del text
 			Translation(-1, 1, 0); // Posicion del text
-		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez");
-#endif
 
-		m_pCamera->ChangeView(CCamera::ViewMode::Default);
+		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez");
+//#endif
+
+		//Limpiando text blender
+		MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
+		m_pCamera->setView(p, v, w);
 		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
 		
 		scenario->paintScenarioObjects(Paint);

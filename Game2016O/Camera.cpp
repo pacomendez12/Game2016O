@@ -24,7 +24,7 @@ void CCamera::ChangeView(ViewMode view)
 	switch (view)
 	{
 	case ViewMode::Default:
-		EyePos = { 20, 0, 0, 1 };
+		EyePos = { 20, 0, 20, 1 };
 		break;
 	case ViewMode::PlayerA:
 		EyePos = { 8, 10, 0, 1 };
@@ -43,6 +43,13 @@ void CCamera::ChangeView(ViewMode view)
 	VECTOR4D Up = { 0, 0, 1, 0 };
 	m_pDXPainter->m_Params.View = View(EyePos, Target, Up);
 	m_pDXPainter->m_Params.World = Identity();
+}
+
+void CCamera::setView(MATRIX4D &Projection, MATRIX4D &view, MATRIX4D &world)
+{
+	m_pDXPainter->m_Params.Projection = Projection;
+	m_pDXPainter->m_Params.View = view;
+	m_pDXPainter->m_Params.World = world;
 }
 
 void CCamera::ResetCamera()

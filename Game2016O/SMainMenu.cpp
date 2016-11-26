@@ -13,7 +13,6 @@ CSMainMenu::CSMainMenu()
 	m_pSRVBackGround =	nullptr;
 	m_pSRVMainOption1 = nullptr;
 	m_pSRVMainOption2 = nullptr;
-	m_pTextRenderer =	nullptr;
 }
 CSMainMenu::~CSMainMenu()
 {
@@ -110,12 +109,7 @@ void CSMainMenu::OnEntry()
 	// configurar inputProcessor
 	MAIN->m_pInputProcessor->SetJoysticMode(CInputProcessor::JoysticMode::KEYBOARD);
 
-	//inicializar el render de texto
-	m_pTextRenderer = new CDXTextRenderer(MAIN->m_pDXManager, MAIN->m_pDXPainter);
-	if (!m_pTextRenderer->Initialize())
-	{
-		// TODO: validate
-	}
+
 }
 void CSMainMenu::OnExit()
 {
@@ -130,8 +124,7 @@ void CSMainMenu::OnExit()
 		}
 	}
 
-	m_pTextRenderer->Uninitialize();
-	SAFE_DELETE(m_pTextRenderer);
+
 
 	MAIN->m_pInputProcessor->SetJoysticMode(CInputProcessor::JoysticMode::JOYSTIC);
 }
@@ -224,39 +217,41 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 			Painter->DrawIndexed(option.frame, 4, option.indices, 6);
 		}
 
-		//CDXBasicPainter::VERTEX
-
-		//Dibujar la opcion 1
-		/*CDXBasicPainter::VERTEX Frame1[4]
 		{
-			{ { -0.5f,2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
-			{ { 0.5f, 2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
-			{ { -0.5f,1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
-			{ { 0.5,  1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
-		};
-		Ctx->PSSetShaderResources(3, 1, &m_pSRVMainOption1);
-		Painter->DrawIndexed(Frame1, 4, FrameIndex, 6);
-		//Dibujar la opción 2
-		CDXBasicPainter::VERTEX Frame2[4]
-		{
-			{ { -0.5f,-1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
-			{ { 0.5f, -1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
-			{ { -0.5f,-2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
-			{ { 0.5,  -2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
-		};
-		Ctx->PSSetShaderResources(3, 1, &m_pSRVMainOption2);
-		Painter->DrawIndexed(Frame2, 4, FrameIndex, 6);*/
+			//CDXBasicPainter::VERTEX
 
-		//TODO: resolver por que no se muestran los objetos cuando dibujo texto
-#if 0
+			//Dibujar la opcion 1
+			/*CDXBasicPainter::VERTEX Frame1[4]
+			{
+				{ { -0.5f,2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
+				{ { 0.5f, 2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
+				{ { -0.5f,1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
+				{ { 0.5,  1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
+			};
+			Ctx->PSSetShaderResources(3, 1, &m_pSRVMainOption1);
+			Painter->DrawIndexed(Frame1, 4, FrameIndex, 6);
+			//Dibujar la opción 2
+			CDXBasicPainter::VERTEX Frame2[4]
+			{
+				{ { -0.5f,-1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
+				{ { 0.5f, -1.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
+				{ { -0.5f,-2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
+				{ { 0.5,  -2.0f / 3.0f,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
+			};
+			Ctx->PSSetShaderResources(3, 1, &m_pSRVMainOption2);
+			Painter->DrawIndexed(Frame2, 4, FrameIndex, 6);*/
+
+			//TODO: resolver por que no se muestran los objetos cuando dibujo texto
+		}
+//#if 0
 		//text
 		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
 			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
 			/*RotationZ(3.141592 / 4) * */ // Orientacion del text
-			Translation(-1, 1, 0); // Posicion del text
+			Translation(-1, 1, 0); // Posicion del texto
 		
-		m_pTextRenderer->RenderText(ST, "Francisco Mendez");
-#endif
+		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez");
+//#endif
 
 		MAIN->m_pDXManager->GetSwapChain()->Present(1, 0);
 	}

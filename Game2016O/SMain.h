@@ -12,6 +12,7 @@
 #include "NetProcessor.h"
 #include <unordered_map>
 #include <string>
+#include "DXTextRenderer.h"
 
 
 #define MAIN ((CSMain*)m_pSMOwner->GetObjectByID(CLSID_CSMain))
@@ -50,6 +51,7 @@ public:
 	CInputManager* m_pInputManager;
 	CInputProcessor* m_pInputProcessor;
 	CNetProcessor *m_pNetProcessor;
+	CDXTextRenderer *m_pTextRenderer;
 	CFX *m_FX;
 
 

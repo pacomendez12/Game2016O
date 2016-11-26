@@ -84,7 +84,7 @@ void CDXTextRenderer::RenderText(MATRIX4D W, const char * pszText)
 		Frame[3].TexCoord.x = (i + 1) / 16.0f;
 		Frame[3].TexCoord.y = (j + 1) / 16.0f;
 
-		VECTOR4D Derecha = { 1, 0, 0, 0 };
+		VECTOR4D Derecha = { 1.5, 0, 0, 0 };
 		m_pPainter->DrawIndexed(Frame, 4, FrameIndex, 6);
 
 		for (int i = 0; i < 4; i++)
