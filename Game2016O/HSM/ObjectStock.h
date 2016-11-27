@@ -26,6 +26,8 @@ public:
 	CObjectBase* AttachObject(unsigned long ulIDObject,CObjectBase* pObject);
 	CObjectBase* DetachObject(unsigned long ulIDObject);
 	CObjectBase* GetObjectByID(unsigned long ulIDObject);
+	//No AddRef version of GetObjectByID used for indirect method calls
+	CObjectBase* QueryObjectByID(unsigned long ulIDObject);
 	void		 ReleaseAll(void);
 	void		 ForEach(CObjectCommand* pCommand);
 	void		 ForEachInSet(set<unsigned long>& setIn, CObjectCommand* pCommand);

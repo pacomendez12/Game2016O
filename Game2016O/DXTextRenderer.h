@@ -14,7 +14,7 @@ public:
 	CDXTextRenderer(CDXManager *pManager, CDXBasicPainter *pPainter);
 	~CDXTextRenderer();
 	bool Initialize();
-	void RenderText(MATRIX4D W, const char *pszText); //la transformacion es sobre la primer letra izquierda
+	void RenderText(MATRIX4D W, const char * pszText, VECTOR4D color); //la transformacion es sobre la primer letra izquierda
 	void Uninitialize();
 };
 

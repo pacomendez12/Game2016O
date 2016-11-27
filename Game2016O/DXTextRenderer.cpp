@@ -51,15 +51,15 @@ bool CDXTextRenderer::Initialize()
 	return false;
 }
 
-void CDXTextRenderer::RenderText(MATRIX4D W, const char * pszText)
+void CDXTextRenderer::RenderText(MATRIX4D W, const char * pszText, VECTOR4D color)
 {
 	//CDXBasicPainter::VERTEX Frame[4] = 
 	CDXBasicPainter::VERTEX Frame[4]
 	{
-		{ { -1,1,0,1 }, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
-		{ { 1,1,0,1  }, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
-		{ { -1,-1,0,1}, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
-		{ { 1,-1,0,1 }, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
+		{ { -1,1,0,1 }, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },color,{ 0,0,0,0 } },
+		{ { 1,1,0,1  }, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },color,{ 1,0,0,0 } },
+		{ { -1,-1,0,1}, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },color,{ 0,1,0,0 } },
+		{ { 1,-1,0,1 }, { 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },color,{ 1,1,0,0 } }
 	};
 
 	unsigned long FrameIndex[6] { 0,1,2,2,1,3 };

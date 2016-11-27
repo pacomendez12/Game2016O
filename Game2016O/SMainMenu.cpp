@@ -249,8 +249,8 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
 			/*RotationZ(3.141592 / 4) * */ // Orientacion del text
 			Translation(-1, 1, 0); // Posicion del texto
-		
-		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez");
+		VECTOR4D blanco = { 1, 1, 1, 1 };
+		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez", blanco);
 //#endif
 
 		MAIN->m_pDXManager->GetSwapChain()->Present(1, 0);

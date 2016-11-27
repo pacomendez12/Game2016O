@@ -2,6 +2,7 @@
 #include "SServerMultiplayer.h"
 #include "SMainMenu.h"
 #include "SMain.h"
+#include "SGame.h"
 CSServerMultiplayer::CSServerMultiplayer()
 {
 	m_ulKeyGen = 0;
@@ -24,7 +25,7 @@ unsigned long CSServerMultiplayer::OnEvent(CEventBase* pEvent)
 			Scaling(0.05, 0.1, 1)* //Tamaño del caracter!!!
 			Translation(-1, 1, 0); //Posición del texto;
 		VECTOR4D TexColor = { 1,1,1,1 };
-		MAIN->m_pTextRender->RenderText(ST, "Client list", TexColor);
+		MAIN->m_pTextRenderer->RenderText(ST, "Client list", TexColor);
 		int i = 0;
 		for (auto RP : m_pGame->m_mapKey2Socket)
 		{
@@ -38,7 +39,7 @@ unsigned long CSServerMultiplayer::OnEvent(CEventBase* pEvent)
 			MAIN->m_pNetProcessor->GetClientBySocket(RP.second, Client);
 			InetNtopA(AF_INET, &Client.Address.sin_addr,ip,32);
 			wsprintfA(sz, "Player IP:%s",ip);
-			MAIN->m_pTextRender->RenderText(ST, sz,TexColor);
+			MAIN->m_pTextRenderer->RenderText(ST, sz,TexColor);
 			i++;
 		}
 		MAIN->m_pDXManager->GetSwapChain()->Present(1, 0);

@@ -14,6 +14,9 @@
 #define IDI_SMALL				108
 #define IDC_GAME2016O			109
 #define IDC_MYICON				2
+#define IDD_CONNECT                     129
+#define IDC_EDIT_ADDRESS_NAME           1000
+#define IDC_EDIT_PORT                   1001
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1
 #endif
