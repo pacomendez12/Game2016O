@@ -13,7 +13,7 @@ const char *g_cszMeshesNames[]{
 };
 
 const char *g_cszMeshesFileNames[]{
-	"casa.blend", "esfera.blend"
+	"casa.blend", "hen1.blend"
 };
 
 

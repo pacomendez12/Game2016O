@@ -24,7 +24,7 @@ void CCamera::ChangeView(ViewMode view)
 	switch (view)
 	{
 	case ViewMode::Default:
-		EyePos = { 20, 0, 20, 1 };
+		EyePos = { 20, 0, 0, 1 };
 		break;
 	case ViewMode::PlayerA:
 		EyePos = { 8, 10, 0, 1 };
