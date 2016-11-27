@@ -13,7 +13,7 @@ public:
 	Hen(int objectId, double scale, CMesh * mesh,
 		ScenarioPosition *initialPostion, bool paint,
 		ScenarioPosition *finalPostion,
-		int totalSteps, int barnId);
+		int totalSteps, int barnId, VECTOR4D objectColor);
 	void move();
 	int getBarnId();
 	boolean alreadyInBarn();

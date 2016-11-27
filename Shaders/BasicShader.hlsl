@@ -173,13 +173,15 @@ float4 PSMain(VERTEX_OUTPUT Input) :SV_Target
     }
     if (Flags.x & MAPPING_DIFFUSE)
         ColorDiffuse *= Diffuse.Sample(Sampler, Input.TexCoord.xy);
+	else
+		ColorDiffuse *= Brightness;
 	if (Flags.x&VERTEX_PRELIGHTEN)
 		ColorEmissive += Input.Color;
     return Material.Emissive +
     ColorDiffuse * Material.Diffuse +
     ColorSpecular * Material.Specular +
     ColorEnviromental * Material.Ambient+
-    Brightness+ColorEmissive;
+    +ColorEmissive;
 }
 
 float4 VSShadow(VERTEX_INPUT Input):SV_Position

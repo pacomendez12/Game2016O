@@ -1,8 +1,8 @@
 ﻿  SGame.cpp
-c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(31): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(182): warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
-c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(182): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(184): warning C4244: 'argument': conversion from 'double' to 'UINT8', possible loss of data
-c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(78): warning C4101: 'Stimulus': unreferenced local variable
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(40): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(206): warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(206): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(208): warning C4244: 'argument': conversion from 'double' to 'UINT8', possible loss of data
+c:\users\nvcruzhe\desktop\githubrepos\game2016o\game2016o\sgame.cpp(94): warning C4101: 'Stimulus': unreferenced local variable
   Game2016O.vcxproj -> C:\Users\nvcruzhe\Desktop\githubRepos\Game2016O\Debug\Game2016O.exe
   Game2016O.vcxproj -> C:\Users\nvcruzhe\Desktop\githubRepos\Game2016O\Debug\Game2016O.pdb (Full PDB)

@@ -6,11 +6,6 @@ JumpingHen::JumpingHen()
 {
 }
 
-JumpingHen::JumpingHen(int objectId, double scale, CMesh * mesh, ScenarioPosition * initialPostion, bool paint, ScenarioPosition * finalPostion, int totalSteps, int barnId):
-	Hen(objectId, scale, mesh, initialPostion, paint, finalPostion, totalSteps, barnId)
-{
-}
-
 void JumpingHen::move()
 {
 	d_x += incrementX;

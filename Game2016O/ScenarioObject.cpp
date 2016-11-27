@@ -15,9 +15,11 @@ ScenarioObject::ScenarioObject(int objectId, CMesh * mesh, bool paint)
 	d_z = 0.0;
 	d_scale = 1.0;
 	b_paint = paint;
+	v4D_objectColor = { 1,1,1,0 };
 }
 
-ScenarioObject::ScenarioObject(int objectId, double scale, CMesh * mesh, ScenarioPosition *scenarioPosition, bool paint)
+ScenarioObject::ScenarioObject(int objectId, double scale, CMesh * mesh,
+	ScenarioPosition *scenarioPosition, bool paint, VECTOR4D objectColor)
 {
 	i_objectId = objectId;
 	m_objectMesh = mesh;
@@ -26,6 +28,7 @@ ScenarioObject::ScenarioObject(int objectId, double scale, CMesh * mesh, Scenari
 	d_z = scenarioPosition->getZ();
 	d_scale = scale;
 	b_paint = paint;
+	v4D_objectColor = objectColor;
 }
 
 double ScenarioObject::getX()
@@ -81,6 +84,13 @@ void ScenarioObject::moveTo(double x, double y, double z)
 	d_z = z;
 }
 
+void ScenarioObject::moveTo(ScenarioPosition *scenarioPosition)
+{
+	d_x = scenarioPosition->getX();
+	d_y = scenarioPosition->getY();
+	d_z = scenarioPosition->getZ();
+}
+
 void ScenarioObject::setX(double x)
 {
 	d_x = x;
@@ -110,6 +120,9 @@ void ScenarioObject::incrementScore(int i)
 {
 }
 
+VECTOR4D ScenarioObject::getObjectColor() {
+	return v4D_objectColor;
+}
 
 ScenarioObject::~ScenarioObject()
 {

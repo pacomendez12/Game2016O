@@ -15,6 +15,7 @@ void Scenario::addElementToScenario(int scenarioObjectId, ScenarioObject * scena
 
 void Scenario::removeElementsFromScenario()
 {
+	idIndex = -1;
 	scenarioObjects.clear();
 }
 
@@ -30,7 +31,8 @@ void Scenario::paintScenarioObjects(CDXBasicPainter* m_pDXPainter)
 
 			// Object in it's right position and size
 			m_pDXPainter->m_Params.World =  scaling * traslation;
-
+			m_pDXPainter->m_Params.Brightness = scenarioObject->getObjectColor();
+			
 			// Painter drawing current Mesh
 			m_pDXPainter->DrawIndexed(&currentMesh->m_Vertices[0],
 				currentMesh->m_Vertices.size(),
@@ -55,11 +57,15 @@ map<int, ScenarioObject*> Scenario::getScenarioObjects()
 	return scenarioObjects;
 }
 
-Scenario::Scenario()
+void Scenario::resetIds()
 {
 	idIndex = -1;
 }
 
+Scenario::Scenario()
+{
+	idIndex = -1;
+}
 
 Scenario::~Scenario()
 {

@@ -23,9 +23,9 @@ Hen::Hen(int objectId, CMesh * mesh, bool paint):
 
 Hen::Hen(int objectId, double scale, CMesh * mesh,
 	ScenarioPosition * initialPostion, bool paint,
-	ScenarioPosition * finalPostion, int totalSteps, int barnId):
+	ScenarioPosition * finalPostion, int totalSteps, int barnId, VECTOR4D objectColor):
 	ScenarioObject(objectId, scale, mesh, initialPostion,
-		paint)
+		paint, objectColor)
 {
 
 	//cout << "FINAL: " << finalPostion->getX() << "," << finalPostion->getY() << endl;

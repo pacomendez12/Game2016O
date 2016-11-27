@@ -17,6 +17,7 @@ public:
 	void removeScenarioObjectById(int scenarioObjectId);
 	ScenarioObject* getScenarioObect(int scenarioObjectId);
 	map<int, ScenarioObject *> getScenarioObjects();
+	void resetIds();
 protected:
 	map<int, ScenarioObject *> scenarioObjects;
 	map<int, ScenarioObject *>::iterator it;

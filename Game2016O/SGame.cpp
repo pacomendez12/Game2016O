@@ -10,8 +10,17 @@
 
 void CSGame::createScenarioElements(int totalSpheres)
 {
-	CMesh *barnMesh = MAIN->GetMeshByString("casa");
-	CMesh *henMesh = MAIN->GetMeshByString("esfera");
+	barnMesh = MAIN->GetMeshByString("casa");
+	henMesh = MAIN->GetMeshByString("esfera");
+
+	markerColors.push_back({255,255,255,0}); // White
+	markerColors.push_back({ 255,0,255,0 }); // Moradp
+	markerColors.push_back({ 0,0,0,0 }); // Black
+
+	barnColors.push_back({ 255,255,0,0 }); // Yellow
+	barnColors.push_back({ 255,0,0,0 }); // Red
+	barnColors.push_back({0, 255, 0, 0}); // Green
+	barnColors.push_back({0, 0, 255, 0}); //Blue
 
 	int newScenarioObjectId = 0;
 	
@@ -24,7 +33,7 @@ void CSGame::createScenarioElements(int totalSpheres)
 	for (int i = 0; i < 4; i++) {
 		newScenarioObjectId = staticScenario->getNewScenarioObjectId();
 		staticScenario->addElementToScenario(newScenarioObjectId, new Barn(newScenarioObjectId, 1,
-			barnMesh, barnScenarioPositions[newScenarioObjectId], true));
+			barnMesh, barnScenarioPositions[newScenarioObjectId], true, barnColors[i]));
 	}
 
 	// Creating hens
@@ -37,6 +46,8 @@ void CSGame::createScenarioElements(int totalSpheres)
 		barnId = rand() % 4;
 		x = rand() % 100 + 70;
 		y = rand() % 200 - 100;
+		//x = 1;
+		//y = 1;
 		steptsToTarget = rand() % 1000 + 500;
 		//cout << barnId << " (" << x << "," << y << ")" << endl;
 		newScenarioObjectId = dynamicScenario->getNewScenarioObjectId();
@@ -44,7 +55,7 @@ void CSGame::createScenarioElements(int totalSpheres)
 			newScenarioObjectId,
 			new Hen(newScenarioObjectId, 0.2, henMesh,
 				new ScenarioPosition(x, y, 0), false, barnScenarioPositions[barnId],
-				steptsToTarget, barnId));
+				steptsToTarget, barnId, {1,1,1,0}));
 	}
 }
 
@@ -60,9 +71,14 @@ void CSGame::OnEntry()
 
 	game = false;
 	userInteraction = false;
-
-	userSelectedBarn = 0;
 	greatestHensInBarn = 0;
+
+	totalPlayers = TOTAL_PLAYERS;
+	totalBarns = TOTAL_BARNS;
+
+	for (int i = 0; i < totalPlayers; i++) {
+		userSelectedBarn.push_back(0);
+	}
 
 	createScenarioElements(TOTAL_HENS);
 }
@@ -79,26 +95,29 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			switch (Action->m_nAction) {
 			case JOY_AXIS_RIGHT_PRESSED:
 				//cout << userSelectedBarn << endl;
-				userSelectedBarn++;
-				userSelectedBarn = userSelectedBarn % 4;
-				if (userSelectedBarn < 0) {
-					userSelectedBarn += 4;
+				userSelectedBarn[0]--;
+				userSelectedBarn[0] = userSelectedBarn[0] % 4;
+				if (userSelectedBarn[0] < 0) {
+					userSelectedBarn[0] += 4;
 				}
+				dynamicScenario->getScenarioObect(userIds[0])->moveTo(barnScenarioPositions[userSelectedBarn[0]]);
+				dynamicScenario->getScenarioObect(userIds[0])->setZ(Z_MARKER_POSITION);
 				//cout << userSelectedBarn << endl;
 				break;
 			case JOY_AXIS_LEFT_PRESSED:
 				//cout << userSelectedBarn << endl;
-				userSelectedBarn--;
-				userSelectedBarn = userSelectedBarn % 4;
-				if (userSelectedBarn < 0) {
-					userSelectedBarn += 4;
+				userSelectedBarn[0]++;
+				userSelectedBarn[0] = userSelectedBarn[0] % 4;
+				if (userSelectedBarn[0] < 0) {
+					userSelectedBarn[0] += 4;
 				}
+				dynamicScenario->getScenarioObect(userIds[0])->moveTo(barnScenarioPositions[userSelectedBarn[0]]);
+				dynamicScenario->getScenarioObect(userIds[0])->setZ(Z_MARKER_POSITION);
 				//cout << userSelectedBarn << endl;
 				break;
 			case JOY_BUTTON_B_PRESSED:
 				cout << "Button B pressed" << endl;
-				cout << "User selected Barn: " << userSelectedBarn << endl;
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < totalBarns; i++) {
 					Barn *barn = dynamic_cast<Barn*>(staticScenario->getScenarioObect(i));
 					cout << barn->getHensInHouse() << endl;
 					if (barn->getHensInHouse() > greatestHensInBarn) {
@@ -107,13 +126,18 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 					}
 				}
 				cout << "GreatestBarn " << greatestBarnId << ":" << greatestHensInBarn << endl;
-				cout << "User selected Barn " << userSelectedBarn << endl;
 
-				if (userSelectedBarn == greatestBarnId) {
-					cout << "GANASTE" << endl;
+				for (int i = 0; i < totalPlayers; i++) {
+					cout << "User: " << i << " selected Barn " << userSelectedBarn[i] << endl;
 				}
-				else {
-					cout << "PERDISTE!!1" << endl;
+
+				for (int i = 0; i < totalPlayers; i++) {
+					if (userSelectedBarn[i] == greatestBarnId) {
+						cout << "User: " << i << " GANO" << endl;
+					}
+					else {
+						cout << "User: " << i << " PERDIO" << endl;
+					}
 				}
 				break;
 			case JOY_BUTTON_Y_PRESSED:
@@ -190,10 +214,10 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->m_Params.Lights[0].Type = LIGHT_DIRECTIONAL;
 		Paint->m_Params.Lights[0].Flags = LIGHT_ON;
 
-		Paint->m_Params.Lights[0].Direction = { -1, 0, 0};
+		Paint->m_Params.Lights[0].Direction = { -1, 0, 0}; // Modificar la direccion de la luz
 		Paint->m_Params.Lights[0].Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Lights[0].Position = { -100, 0, 0 , 0};
-		Paint->m_Params.Flags = MAPPING_EMISSIVE;
+		Paint->m_Params.Flags = 0;
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };
 
@@ -208,12 +232,12 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 					removeHens.push_back(hen->getObjectId());
 				}
 			}
-			dynamicScenario->paintScenarioObjects(Paint);
 			manageScenarioObjectUpdates();
 		}
 
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
+		dynamicScenario->paintScenarioObjects(Paint);
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
@@ -243,9 +267,26 @@ void CSGame::manageScenarioObjectUpdates(){
 	removeHens.clear();
 
 	if (dynamicScenario->getScenarioObjects().empty()) {
+		// Stop hens to move
 		game = false;
+
+		// Allow user to move
 		userInteraction = true;
 		MAIN->m_pInputProcessor->SetJoysticMode(CInputProcessor::JoysticMode::KEYBOARD);
+
+		// Create user selector
+		createUserSelectionMarker();
+	}
+}
+
+void CSGame::createUserSelectionMarker()
+{
+	userIds.resize(totalPlayers);
+	for (int i = 0; i < totalPlayers; i++) {
+		userIds[i] = dynamicScenario->getNewScenarioObjectId();
+		ScenarioObject *so = new ScenarioObject(userIds[i], 0.2, henMesh, barnScenarioPositions[i], true, markerColors[i]);
+		so->setZ(Z_MARKER_POSITION);
+		dynamicScenario->addElementToScenario(userIds[i], so);
 	}
 }
 
