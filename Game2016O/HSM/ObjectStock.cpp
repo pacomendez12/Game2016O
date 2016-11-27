@@ -39,6 +39,14 @@ CObjectBase* CObjectStock::GetObjectByID(unsigned long ulIDObject)
 	pObj->AddRef();
 	return pObj;
 }
+CObjectBase* CObjectStock::QueryObjectByID(unsigned long ulIDObject)
+{
+	CObjectBase* pObj = NULL;
+	auto it = m_mapObjects.find(ulIDObject);
+	if (it != m_mapObjects.end())
+		pObj = it->second;
+	return pObj;
+}
 void CObjectStock::ForEach(CObjectCommand* pCommand)
 {
 	for(auto it=m_mapObjects.begin();it!=m_mapObjects.end();it++)

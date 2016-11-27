@@ -9,11 +9,11 @@
 #include "InputProcessor.h"
 
 const char *g_cszMeshesNames[]{
-	"casa", "esfera"
+	"casa", "hen", "esfera"
 };
 
 const char *g_cszMeshesFileNames[]{
-	"casa.blend", "esfera.blend"
+	"casa.blend", "hen1.blend", "esfera.blend"
 };
 
 
@@ -28,6 +28,7 @@ CSMain::CSMain()
 	m_pInputProcessor = nullptr;
 	m_pNetProcessor = nullptr;
 	m_FX = nullptr;
+	m_pTextRenderer = nullptr;
 
 	InitializeCriticalSection(&m_csLock);
 	
@@ -137,6 +138,13 @@ void CSMain::OnEntry(void)
 		printf("Unable to work as server, connections are allowed instead");
 	}
 	fflush(stdout);
+	
+	//inicializar el render de texto
+	m_pTextRenderer = new CDXTextRenderer(MAIN->m_pDXManager, MAIN->m_pDXPainter);
+	if (!m_pTextRenderer->Initialize())
+	{
+		puts("Unable to create Text renderer"); fflush(stdout);
+	}
 }
 #include "HSM\EventWin32.h"
 #include "HSM\StateMachineManager.h"
@@ -209,6 +217,9 @@ unsigned long CSMain::OnEvent(CEventBase * pEvent)
 
 void CSMain::OnExit(void)
 {
+
+	m_pTextRenderer->Uninitialize();
+	SAFE_DELETE(m_pTextRenderer);
 	m_pDXPainter->Uninitialize();
 	m_pDXManager->Uninitialize();
 	m_pSndManager->UnitializeSoundEngine();

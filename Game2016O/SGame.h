@@ -1,4 +1,6 @@
 #pragma once
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 #include <map>
 #include <time.h>
 #include "HSM\StateBase.h"
@@ -19,16 +21,67 @@
 
 using namespace std;
 
+class CPlayer
+{
+public:
+	MATRIX4D m_View;
+	MATRIX4D m_LastView;
+	int m_nScore;
+	int m_nHP;
+	char m_szName[32];
+};
+
+struct GAMEDGRAM
+{
+	enum {
+		NOP,
+		REQUEST_KEY,
+		GET_KEY,
+		SET_KEY,
+		PLAYER_REQUEST_CONNECT,
+		PLAYER_REQUEST_GRANTED,
+		PLAYER_REQUEST_DENIED,
+		PLAYER_DISCONNECT,
+		PLAYER_NETWORK_READY,
+		PLAYER_SET_STATE,
+		PLAYER_GET_STATE,
+		PLAYER_REQUEST_PAUSE,
+		PLAYER_REQUEST_CONTINUE,
+		PLAYER_BROADCAST_MESSAGE,
+		GAME_PAUSE,
+		GAME_CONTINUE,
+		GAME_OVER,
+		GAME_START,
+		_unused = 0x7fffffff
+	};
+	unsigned long m_ulCommand;
+	unsigned long m_ulSourceKey;
+	union
+	{
+		MATRIX4D M;
+		VECTOR4D V;
+		float    f;
+		int		 i;
+		char	 szCadena[256];
+		CPlayer  PlayerState;
+	};
+};
+
 class CSGame :
 	public CStateBase
 {
 public:
+	map<unsigned long, CPlayer> m_mapLocalPlayers;  //Ordinal,Jugador
+	map<unsigned long, CPlayer> m_mapRemotePlayers; //Ordinal,Jugador
+	map<unsigned long, SOCKET> m_mapKey2Socket;
+	std::map<SOCKET, unsigned long> m_mapSocket2Key;
 	unsigned long GetClassID() { return CLSID_CSGame; }
 	const char* GetClassString() { return "CSGame"; }
 protected:
 	// Meshes
 	CMesh *barnMesh;
 	CMesh *henMesh;
+	CMesh *sphereMesh;
 
 	// General Variables
 	CMesh *m_pTable;
@@ -63,6 +116,9 @@ protected:
 	vector<VECTOR4D> markerColors;
 	vector<VECTOR4D> barnColors;
 	void createUserSelectionMarker();
+
+	// BG
+	ID3D11ShaderResourceView* m_pSRVBackground;
 
 public:
 	CSGame();

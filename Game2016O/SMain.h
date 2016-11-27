@@ -12,15 +12,12 @@
 #include "NetProcessor.h"
 #include <unordered_map>
 #include <string>
-
+#include "DXTextRenderer.h"
 
 #define MAIN ((CSMain*)m_pSMOwner->GetObjectByID(CLSID_CSMain))
 #define CLSID_CSMain 0x0dccd3ed
-
 #define INPUT_EVENT 0x12345678
-
-
-#define MESHES_NUMBER 2
+#define MESHES_NUMBER 3
 
 class CInputProcessor;
 class CInputEvent :public CEventBase
@@ -50,6 +47,7 @@ public:
 	CInputManager* m_pInputManager;
 	CInputProcessor* m_pInputProcessor;
 	CNetProcessor *m_pNetProcessor;
+	CDXTextRenderer *m_pTextRenderer;
 	CFX *m_FX;
 
 

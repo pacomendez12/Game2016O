@@ -30,7 +30,7 @@ public:
 	virtual ~CSMainMenu();
 private:
 
-	CDXTextRenderer *m_pTextRenderer;
+	
 	ID3D11ShaderResourceView
 		*m_pSRVBackGround,
 		*m_pSRVMainOption1,

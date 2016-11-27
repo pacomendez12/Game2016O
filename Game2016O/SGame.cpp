@@ -6,12 +6,15 @@
 #include "BlenderImporter.h"
 #include <memory>
 #include <iostream>
+#include "Graphics\ImageBMP.h"
 
 
 void CSGame::createScenarioElements(int totalSpheres)
 {
+	//"casa", "hen", "esfera"
 	barnMesh = MAIN->GetMeshByString("casa");
-	henMesh = MAIN->GetMeshByString("esfera");
+	henMesh = MAIN->GetMeshByString("hen");
+	sphereMesh = MAIN->GetMeshByString("esfera");
 
 	markerColors.push_back({255,255,255,0}); // White
 	markerColors.push_back({ 255,0,255,0 }); // Moradp
@@ -68,6 +71,12 @@ void CSGame::OnEntry()
 
 	m_pCamera = new CCamera(MAIN->m_pDXPainter);
 	m_pCamera->ChangeView(CCamera::ViewMode::Default);
+
+	CImageBMP* background =
+		CImageBMP::CreateBitmapFromFile("..\\Assets\\background.bmp", NULL);
+	ID3D11Texture2D* backgroundTexture = background->CreateTexture(MAIN->m_pDXManager);
+	CImageBMP::DestroyBitmap(background);
+	MAIN->m_pDXManager->GetDevice()->CreateShaderResourceView(backgroundTexture, NULL, &m_pSRVBackground);
 
 	game = false;
 	userInteraction = false;
@@ -126,6 +135,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 					}
 				}
 				cout << "GreatestBarn " << greatestBarnId << ":" << greatestHensInBarn << endl;
+
 
 				for (int i = 0; i < totalPlayers; i++) {
 					cout << "User: " << i << " selected Barn " << userSelectedBarn[i] << endl;
@@ -203,9 +213,9 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			DXManager->GetMainDSV()); //ZBuffer
 
 		// Fondo
-		VECTOR4D DeepBlue = { 0.2, 0.2, 0.7, 0 };
+		VECTOR4D DeepBlue = { .2, .3, 4, 0 };
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
-					D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
+			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
 		// Configuras el color de fondo
 		DXManager->GetContext()->ClearRenderTargetView(DXManager->GetMainRTV(), (float *)&DeepBlue);
@@ -221,6 +231,45 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		Paint->m_Params.Material.Diffuse = { 1, 1, 1, 0 };
 		Paint->m_Params.Material.Emissive = { 0, 0, 0, 0 };
 
+		// Imagen de fondo
+		CDXBasicPainter::VERTEX Frame[4]
+		{
+			{ { -1,1, 0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
+			{ { 1, 1, 0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
+			{ { -1,-1,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
+			{ { 1,-1, 0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
+		};
+		unsigned long FrameIndex[6] = { 0,1,2,2,1,3 };
+
+		MATRIX4D p = Paint->m_Params.Projection;
+		MATRIX4D v = Paint->m_Params.View;
+		MATRIX4D w = Paint->m_Params.World;
+
+		Paint->m_Params.Projection =
+		Paint->m_Params.View =
+		Paint->m_Params.World = Identity();
+
+		MAIN->m_pDXManager->GetContext()->PSSetShaderResources(3, 1, &m_pSRVBackground);
+		Paint->m_Params.Flags = MAPPING_EMISSIVE | LIGHTING_DIFFUSE;
+		Paint->DrawIndexed(Frame, 4, FrameIndex, 6);
+
+		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
+			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
+
+//#if 0
+		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
+			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
+									/*RotationZ(3.141592 / 4) * */ // Orientacion del text
+			Translation(-1, 1, 0); // Posicion del text
+		VECTOR4D blanco = { 1, 1, 1, 1 };
+		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez", blanco);
+//#endif
+
+		//Limpiando text blender
+		MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
+		m_pCamera->setView(p, v, w);
+		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
+		
 		// Moving elements in scenario
 		if (game) {
 			map<int, ScenarioObject *> scenarioObjects = dynamicScenario->getScenarioObjects();
@@ -238,6 +287,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
 		dynamicScenario->paintScenarioObjects(Paint);
+
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
@@ -284,7 +334,7 @@ void CSGame::createUserSelectionMarker()
 	userIds.resize(totalPlayers);
 	for (int i = 0; i < totalPlayers; i++) {
 		userIds[i] = dynamicScenario->getNewScenarioObjectId();
-		ScenarioObject *so = new ScenarioObject(userIds[i], 0.2, henMesh, barnScenarioPositions[i], true, markerColors[i]);
+		ScenarioObject *so = new ScenarioObject(userIds[i], 0.2, sphereMesh, barnScenarioPositions[i], true, markerColors[i]);
 		so->setZ(Z_MARKER_POSITION);
 		dynamicScenario->addElementToScenario(userIds[i], so);
 	}

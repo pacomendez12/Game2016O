@@ -14,6 +14,7 @@ public:
 	ViewMode m_currentView;
 
 	void ChangeView(ViewMode view);
+	void setView(MATRIX4D &Projection, MATRIX4D &view, MATRIX4D &world);
 	void ResetCamera();
 
 	// Move Camera
