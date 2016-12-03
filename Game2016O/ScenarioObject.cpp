@@ -33,6 +33,11 @@ ScenarioObject::ScenarioObject(int objectId, double scale, CMesh * mesh,
 	d_scale = scale;
 	b_paint = paint;
 	v4D_objectColor = objectColor;
+
+	for (int i = 0; i < m_objectMesh->m_Vertices.size(); i++)
+	{
+		m_objectMesh->m_Vertices[i].Color = objectColor;
+	}
 }
 
 double ScenarioObject::getX()

@@ -64,6 +64,8 @@ void CDXTextRenderer::RenderText(MATRIX4D W, const char * pszText, VECTOR4D colo
 
 	unsigned long FrameIndex[6] { 0,1,2,2,1,3 };
 	m_pPainter->m_Params.World = W;
+	m_pPainter->m_Params.View = Identity();
+	m_pPainter->m_Params.Projection = Identity();
 	m_pOwner->GetContext()->PSSetShaderResources(3, 1, &m_pSRVFont);
 	m_pPainter->m_Params.Flags = MAPPING_EMISSIVE;
 	m_pOwner->GetContext()->OMSetBlendState(m_pBS, nullptr, -1);

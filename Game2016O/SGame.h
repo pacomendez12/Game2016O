@@ -3,6 +3,7 @@
 #include <WS2tcpip.h>
 #include <map>
 #include <time.h>
+#include <string>
 #include "HSM\StateBase.h"
 #include "Graphics\Mesh.h"
 #include "Camera.h"
@@ -17,7 +18,7 @@
 #define TOTAL_HENS 50
 #define TOTAL_PLAYERS 1
 #define TOTAL_BARNS 4
-#define Z_MARKER_POSITION 2.5
+#define Z_MARKER_POSITION 2.8
 #define SND_HEN1 1
 #define SND_HEN2 2
 #define SND_HEN3 3
@@ -151,16 +152,19 @@ protected:
 	int totalBarns;
 	int greatestHensInBarn;
 	int greatestBarnId;
-	vector<CPlayer *> m_vPlayers;
-	vector<VECTOR4D> markerColors;
-	vector<VECTOR4D> barnColors;
-	void createUserSelectionMarker();
 	bool selectionDone;
 	bool hensOutPainted;
 	bool showWinner;
+	vector<CPlayer *> m_vPlayers;
+	vector<VECTOR4D> markerColors;
+	vector<VECTOR4D> barnColors;
+	vector<CMesh*> coloredMeshes;
+	void createUserSelectionMarker();
 	void repaintHens();
 	void verifyUserSelectionDone();
 	void moveHensBackwards();
+	void drawHensInBarn(int x);
+	//void renderScore(int score);
 
 	// BG
 	ID3D11ShaderResourceView* m_pSRVBackground;
