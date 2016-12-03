@@ -66,6 +66,7 @@ public:
 	}
 	short GetModelsLoadingPercentage();
 	CMesh * GetMeshByString(std::string sMesh);
+	inline int GetRealPlayersNumber() { return m_dRealPlayersNumber; }
 
 	static DWORD CSMain::LoaderThread(LPVOID obj);
 protected:
@@ -79,6 +80,9 @@ private:
 	CMesh *m_pGeometry;
 	std::unordered_map<std::string, CMesh *> m_mMeshes;
 	CRITICAL_SECTION m_csLock;
+
+	int m_dRealPlayersNumber;
+
 	inline void Lock(CSMain * obj = nullptr)
 	{
 		if (!obj)

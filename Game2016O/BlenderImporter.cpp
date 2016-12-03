@@ -102,7 +102,7 @@ std::unique_ptr<CMesh> CBlenderImporter::ImportObject(const char * filePath)
 			mesh->m_Vertices[i].TexCoord = TexCoord;
 		}
 
-		//m_Meshes[i].Optimize();
+		//mesh->Optimize();
 		mesh->BuildTangentSpaceFromTexCoordsIndexed(true);
 		mesh->GenerarCentroides();
 
