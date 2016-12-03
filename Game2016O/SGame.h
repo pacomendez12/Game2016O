@@ -132,6 +132,7 @@ protected:
 	// Game actions, control and configuration
 	void manageScenarioObjectUpdates();
 	void createScenarioElements(int totalSpheres);
+	void verifyHensInBarn();
 
 	// User control selection and score
 	int totalPlayers;

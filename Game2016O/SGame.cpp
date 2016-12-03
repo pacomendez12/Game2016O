@@ -8,8 +8,6 @@
 #include <iostream>
 #include "Graphics\ImageBMP.h"
 
-
-
 CPlayer::CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecter, CSGame *i_pOwner) :
 	m_bIsHuman(i_isHuman), m_dJoysticNumber(i_joysticNumber), m_pSelecter(i_pSelecter),
 	m_dCurrentBarn(0), m_bBarnChoosed(false), m_pOwner(i_pOwner)
@@ -57,22 +55,30 @@ void CPlayer::ChooseBarn()
 
 void CSGame::createScenarioElements(int totalSpheres)
 {
+	int barnTotals[] = { 0,0,0,0 };
+	int barnId = 0;
+	int max = 0;
+	int index = 0;
+	int x = 0;
+	int y = 0;
+	int steptsToTarget;
+
 	//"casa", "hen", "esfera"
 	barnMesh = MAIN->GetMeshByString("casa");
 	henMesh = MAIN->GetMeshByString("hen");
 	sphereMesh = MAIN->GetMeshByString("esfera");
 
-	markerColors.push_back({255,255,255,0}); // White
+	markerColors.push_back({ 255,255,255,0 }); // White
 	markerColors.push_back({ 255,0,255,0 }); // Moradp
 	markerColors.push_back({ 0,0,0,0 }); // Black
 
 	barnColors.push_back({ 255,255,0,0 }); // Yellow
 	barnColors.push_back({ 255,0,0,0 }); // Red
-	barnColors.push_back({0, 255, 0, 0}); // Green
-	barnColors.push_back({0, 0, 255, 0}); //Blue
+	barnColors.push_back({ 0, 255, 0, 0 }); // Green
+	barnColors.push_back({ 0, 0, 255, 0 }); //Blue
 
 	int newScenarioObjectId = 0;
-	
+
 	barnScenarioPositions[0] = new  ScenarioPosition(1.5, -7, 0);
 	barnScenarioPositions[1] = new  ScenarioPosition(0, -2, 0);
 	barnScenarioPositions[2] = new  ScenarioPosition(0, 2.25, 0);
@@ -98,24 +104,42 @@ void CSGame::createScenarioElements(int totalSpheres)
 
 	// Creating hens
 	srand(time(NULL));
-	int barnId = 0;
-	int x;
-	int y;
-	int steptsToTarget;
+
 	for (int i = 0; i < totalSpheres; i++) {
 		barnId = rand() % 4;
-		x = rand() % 100 + 70;
-		y = rand() % 200 - 100;
-		//x = 1;
-		//y = 1;
-		steptsToTarget = rand() % 1000 + 500;
-		//cout << barnId << " (" << x << "," << y << ")" << endl;
-		newScenarioObjectId = dynamicScenario->getNewScenarioObjectId();
-		dynamicScenario->addElementToScenario(
-			newScenarioObjectId,
-			new Hen(newScenarioObjectId, 0.2, new CMesh(*henMesh),
-				new ScenarioPosition(x, y, 0), false, barnScenarioPositions[barnId],
-				steptsToTarget, barnId, {1,1,1,0}));
+		barnTotals[barnId]++;
+	}
+
+	index = 0;
+	max = barnTotals[0];
+	for (int i = 1; i < 4; i++) {
+		if (barnTotals[i] > max) {
+			max = barnTotals[i];
+			index = i;
+		}
+	}
+
+	for (int i = 0; i < 4; i++) {
+		if (barnTotals[i] == max && index != i) {
+			barnTotals[index] += 5;
+			barnTotals[i] -= 5;
+			break;
+		}
+	}
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < barnTotals[i]; j++){
+			x = rand() % 50 + 15;
+			y = rand() % 30 - 20;
+			steptsToTarget = rand() % 500 + 200;
+			//cout << barnId << " (" << x << "," << y << ")" << endl;
+			newScenarioObjectId = dynamicScenario->getNewScenarioObjectId();
+			dynamicScenario->addElementToScenario(
+				newScenarioObjectId,
+				new Hen(newScenarioObjectId, 0.2, new CMesh(*henMesh),
+					new ScenarioPosition(x, y, 0), false, barnScenarioPositions[i],
+					steptsToTarget, i, { 1,1,1,0 }));
+		}
 	}
 }
 
