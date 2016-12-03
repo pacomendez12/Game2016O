@@ -7,6 +7,7 @@ CInputProcessor::CInputProcessor(CStateMachineManager * pHSMOwner)
 {
 	m_pHSMOwner = pHSMOwner;
 	SetJoysticMode(JoysticMode::JOYSTIC);
+	m_jState.resize(8);
 }
 
 unsigned long CInputProcessor::OnEvent(CEventBase * pEvent)
@@ -30,8 +31,7 @@ unsigned long CInputProcessor::OnEvent(CEventBase * pEvent)
 			{
 				if (!Last.rgbButtons[i] && Curr.rgbButtons[i])
 				{
-					auto Action =
-						new CActionEvent(GamePad->first,
+					auto Action = new CActionEvent(GamePad->first,
 							pInput->m_ulTime, (i * 2) + 1);
 					m_pHSMOwner->PostEvent(Action);
 					//printf("posting %d\n", (i * 2) + 1); fflush(stdout);
@@ -73,6 +73,7 @@ unsigned long CInputProcessor::OnEvent(CEventBase * pEvent)
 				{
 					float x = (Curr.lZ - 0x7fff) / 32768.0f; //lZ es X para el segundo eje
 					float y = -(Curr.lRz - 0x7fff) / 32768.0f; ////lRz es y para el segundo eje
+
 					//printf("%f\n", y); fflush(stdin);
 					JoyKeyState state;
 					const float deadZone = 0.3;
@@ -97,10 +98,10 @@ unsigned long CInputProcessor::OnEvent(CEventBase * pEvent)
 						state = JoyKeyState::JOY_AXIS_RELEASED;
 					}
 
-					if (m_jState != state)
+					if (m_jState[pInput->m_nSource] != state)
 					{
 						//printf("posting nuevo key = %d\n", state); fflush(stdout);
-						m_jState = state;
+						m_jState[pInput->m_nSource] = state;
 						Action = new CActionEvent(GamePad->first, pInput->m_ulTime, state);
 						m_pHSMOwner->PostEvent(Action);
 					}
@@ -134,7 +135,8 @@ void CInputProcessor::SetJoysticMode(JoysticMode pMode)
 		m_jMode = pMode;
 		if (pMode == JoysticMode::KEYBOARD)
 		{
-			m_jState = JoyKeyState::JOY_AXIS_RELEASED;
+			for (auto state : m_jState)
+				state = JoyKeyState::JOY_AXIS_RELEASED;
 		}
 	}
 	else

@@ -8,6 +8,11 @@
 
 #include "InputProcessor.h"
 
+struct MeshStructureLoader {
+	char *name;
+	int objectsNumber;
+};
+
 const char *g_cszMeshesNames[]{
 	"casa", "hen", "esfera"
 };
@@ -15,6 +20,10 @@ const char *g_cszMeshesNames[]{
 const char *g_cszMeshesFileNames[]{
 	"casa.blend", "hen1.blend", "esfera.blend"
 };
+
+/*const MeshStructureLoader g_MeshesFileNames[]{
+	{ "casa.blend", 4 }, {"hen1.blend", 1}, {"esfera.blend", 3}
+};*/
 
 
 CSMain::CSMain()
@@ -123,6 +132,7 @@ void CSMain::OnEntry(void)
 	else
 	{
 		printf("OK :)... \n");
+		m_dRealPlayersNumber = m_pInputManager->GetDeviceCount();
 	}
 
 	// cargar los modelos asyncronamente una vez que tegamos video y audio
@@ -154,6 +164,7 @@ unsigned long CSMain::OnEvent(CEventBase * pEvent)
 	{
 		if (m_pSndManager)
 			m_pSndManager->RemoveAllSndFxStopped();
+		m_dRealPlayersNumber = m_pInputManager->GetDeviceCount();
 		for (int iSource = 0; iSource < m_pInputManager->GetDeviceCount(); iSource++)
 		{
 			DIJOYSTATE2 js2;
@@ -245,8 +256,7 @@ DWORD CSMain::LoaderThread(LPVOID obj)
 		std::cout << "Loading mesh " << g_cszMeshesNames[i] << std::endl;
 		std::unique_ptr<CMesh> geometry = CBlenderImporter::ImportObject((std::string("..\\Assets\\") + std::string(g_cszMeshesFileNames[i])).c_str());
 		CMesh *ptrMesh = geometry.release();
-		csmain->m_mMeshes.insert(std::make_pair(std::string(g_cszMeshesNames[i]), ptrMesh));
-
+		csmain->m_mMeshes.insert(std::make_pair(std::string(g_cszMeshesNames[i]) /*+ std::to_string(j)*/, ptrMesh));
 		std::cout << "Mesh " << g_cszMeshesNames[i] << " has " << ptrMesh->m_Vertices.size() << std::endl;
 	}
 	csmain->m_bMedelsLoaded = true;

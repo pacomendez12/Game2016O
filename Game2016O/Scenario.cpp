@@ -23,6 +23,7 @@ void Scenario::paintScenarioObjects(CDXBasicPainter* m_pDXPainter)
 {
 	for (it = scenarioObjects.begin(); it != scenarioObjects.end(); it++) {
 		ScenarioObject *scenarioObject = it->second;
+		if (scenarioObject == nullptr) continue;
 		if (scenarioObject->getPaint()) {
 			CMesh* currentMesh = scenarioObject->getObjectMesh();
 
@@ -53,7 +54,7 @@ ScenarioObject * Scenario::getScenarioObect(int scenarioObjectId)
 	return scenarioObjects[scenarioObjectId];
 }
 
-map<int, ScenarioObject*> Scenario::getScenarioObjects()
+map<int, ScenarioObject*> &Scenario::getScenarioObjects()
 {
 	return scenarioObjects;
 }

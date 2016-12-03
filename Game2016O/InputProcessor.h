@@ -22,6 +22,6 @@ private:
 	JoysticMode m_jMode;
 
 	// para keyboard mode
-	JoyKeyState m_jState;
+	vector<JoyKeyState> m_jState;
 };
 

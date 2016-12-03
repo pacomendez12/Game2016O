@@ -84,7 +84,8 @@ VERTEX_OUTPUT VSMain(VERTEX_INPUT Input)
     Output.Position = Position;
     Output.PositionNonProjected = mul(Input.Position, WV);
     Output.Normal = normalize(mul(Input.Normal,WV));
-	Output.Color = Input.Color;
+	//Output.Color = Input.Color;
+	Output.Color = Brightness;
     Output.TexCoord = Input.TexCoord;
     //Trasnformar el espacio tangente al espacio de vista
     float4 T, B;
@@ -173,8 +174,8 @@ float4 PSMain(VERTEX_OUTPUT Input) :SV_Target
     }
     if (Flags.x & MAPPING_DIFFUSE)
         ColorDiffuse *= Diffuse.Sample(Sampler, Input.TexCoord.xy);
-	else
-		ColorDiffuse *= Brightness;
+	/*else esta linea cambia el color con el brightnes
+		ColorDiffuse *= Input.Color;*/
 	if (Flags.x&VERTEX_PRELIGHTEN)
 		ColorEmissive += Input.Color;
     return Material.Emissive +

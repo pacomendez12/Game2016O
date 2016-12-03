@@ -21,6 +21,10 @@
 
 using namespace std;
 
+enum MoveEnum {LEFT, RIGHT};
+
+class CSGame;
+
 class CPlayer
 {
 public:
@@ -29,6 +33,27 @@ public:
 	int m_nScore;
 	int m_nHP;
 	char m_szName[32];
+
+private:
+	bool m_bIsHuman;
+	int m_dJoysticNumber;
+	bool m_bBarnChoosed;
+
+	int m_dCurrentBarn;
+	ScenarioObject * m_pSelecter;
+	CSGame *m_pOwner;
+
+public:
+	CPlayer() {} // avoid using this
+	CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecter, CSGame *i_pOwner);
+
+	void MoveSelector(MoveEnum move);
+	void MoveSelector(int barn);
+	void ChooseBarn();
+	inline int GetCurrentBarnChoosed() { return m_dCurrentBarn; }
+	inline void Show() { m_pSelecter->setPaint(true); }
+	inline void Hide() { m_pSelecter->setPaint(false); }
+	inline const char * GetPlayerName() { return m_szName; }
 };
 
 struct GAMEDGRAM
@@ -77,6 +102,7 @@ public:
 	std::map<SOCKET, unsigned long> m_mapSocket2Key;
 	unsigned long GetClassID() { return CLSID_CSGame; }
 	const char* GetClassString() { return "CSGame"; }
+	map<int, ScenarioPosition *> &GetBarnPositions() { return barnScenarioPositions; }
 protected:
 	// Meshes
 	CMesh *barnMesh;
@@ -95,6 +121,7 @@ protected:
 	vector<int> incrementInBarns;
 	vector<int> removeHens;
 	map<int, ScenarioPosition *> barnScenarioPositions;
+	int m_dHensInBarn;
 	map<int, ScenarioObject *>::iterator it;
 
 	// HSM methods
@@ -111,8 +138,7 @@ protected:
 	int totalBarns;
 	int greatestHensInBarn;
 	int greatestBarnId;
-	vector<int> userIds;
-	vector<int> userSelectedBarn;
+	vector<CPlayer *> m_vPlayers;
 	vector<VECTOR4D> markerColors;
 	vector<VECTOR4D> barnColors;
 	void createUserSelectionMarker();

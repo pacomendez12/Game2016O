@@ -16,7 +16,8 @@ public:
 	void paintScenarioObjects(CDXBasicPainter* m_pDXPainter);
 	void removeScenarioObjectById(int scenarioObjectId);
 	ScenarioObject* getScenarioObect(int scenarioObjectId);
-	map<int, ScenarioObject *> getScenarioObjects();
+	map<int, ScenarioObject *> &getScenarioObjects();
+	inline int count() { return scenarioObjects.size(); }
 	void resetIds();
 protected:
 	map<int, ScenarioObject *> scenarioObjects;
