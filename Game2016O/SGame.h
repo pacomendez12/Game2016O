@@ -15,7 +15,7 @@
 
 #define CLSID_CSGame 0x33221100
 #define TOTAL_HENS 50
-#define TOTAL_PLAYERS 3
+#define TOTAL_PLAYERS 1
 #define TOTAL_BARNS 4
 #define Z_MARKER_POSITION 2.5
 #define SND_HEN1 1
@@ -104,6 +104,7 @@ struct GAMEDGRAM
 class CSGame :
 	public CStateBase
 {
+
 public:
 	map<unsigned long, CPlayer> m_mapLocalPlayers;  //Ordinal,Jugador
 	map<unsigned long, CPlayer> m_mapRemotePlayers; //Ordinal,Jugador
@@ -140,7 +141,7 @@ protected:
 	void OnExit();
 
 	// Game actions, control and configuration
-	void manageScenarioObjectUpdates();
+	void manageHensMovement();
 	void createScenarioElements(int totalSpheres);
 	void fixingSelector();
 	void OwnBarn(CPlayer *player);
@@ -154,6 +155,12 @@ protected:
 	vector<VECTOR4D> markerColors;
 	vector<VECTOR4D> barnColors;
 	void createUserSelectionMarker();
+	bool selectionDone;
+	bool hensOutPainted;
+	bool showWinner;
+	void repaintHens();
+	void verifyUserSelectionDone();
+	void moveHensBackwards();
 
 	// BG
 	ID3D11ShaderResourceView* m_pSRVBackground;

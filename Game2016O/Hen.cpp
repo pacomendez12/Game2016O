@@ -58,6 +58,14 @@ void Hen::move()
 	// incremente the z axis
 }
 
+void Hen::moveBackwards()
+{
+	d_x -= incrementX;
+	d_y -= incrementY;
+
+	traveledDistance -= sqrt(incrementX*incrementX + incrementY*incrementY);
+}
+
 int Hen::getBarnId()
 {
 	return i_barnId;
@@ -65,6 +73,13 @@ int Hen::getBarnId()
 
 boolean Hen::alreadyInBarn() {
 	if (traveledDistance >= targetDistance)
+		return true;
+	return false;
+}
+
+boolean Hen::alreadyInOrigin()
+{
+	if (traveledDistance <= 0)
 		return true;
 	return false;
 }

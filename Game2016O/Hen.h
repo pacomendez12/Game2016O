@@ -15,8 +15,10 @@ public:
 		ScenarioPosition *finalPostion,
 		int totalSteps, int barnId, VECTOR4D objectColor);
 	void move();
+	void moveBackwards();
 	int getBarnId();
 	boolean alreadyInBarn();
+	boolean alreadyInOrigin();
 	virtual ~Hen();
 protected:
 	double slope;

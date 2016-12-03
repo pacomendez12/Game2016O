@@ -202,6 +202,9 @@ void CSGame::OnEntry()
 
 	game = false;
 	userInteraction = false;
+	selectionDone = false;
+	hensOutPainted = false;
+	showWinner = false;
 	greatestHensInBarn = 0;
 
 	totalPlayers = TOTAL_PLAYERS;
@@ -427,17 +430,26 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 					removeHens.push_back(hen->getObjectId());
 				}
 			}
-			manageScenarioObjectUpdates();
+			manageHensMovement();
+		}
+
+		// User interaction status
+		if (userInteraction) {
+			// Check that the selection has been done by all users
+			if (!selectionDone) {
+				verifyUserSelectionDone();
+			}
+			if (hensOutPainted) {
+				moveHensBackwards();
+			}
+			if (showWinner) {
+				cout << "Elegir ganador" << endl;
+			}
 		}
 
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
-
-		// Moving the Player selector when two or more are in the same barn
-
-
 		dynamicScenario->paintScenarioObjects(Paint);
-
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
@@ -451,7 +463,7 @@ void CSGame::OnExit()
 	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 
-void CSGame::manageScenarioObjectUpdates(){
+void CSGame::manageHensMovement(){
 	int incrementSize = incrementInBarns.size();
 	int removeHensSize = removeHens.size();
 	m_dHensInBarn += removeHensSize;
@@ -487,6 +499,52 @@ void CSGame::createUserSelectionMarker()
 {
 	for (auto player : m_vPlayers) {
 		player->Show();
+	}
+}
+
+void CSGame::repaintHens()
+{
+	hensOutPainted = true;
+
+	// Repaint all the hens
+	int firstHen = totalPlayers;
+	for (int i = firstHen; i < dynamicScenario->count(); i++)
+	{
+		auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
+		hen->setPaint(true);
+		hen->moveBackwards();
+	}
+}
+
+void CSGame::verifyUserSelectionDone()
+{
+	bool allSelected = true;
+	for (int i = 0; i < totalPlayers; i++) {
+		allSelected &= m_vPlayers[i]->BarnIsChoosed();
+	}
+	if (allSelected) {
+		cout << "Se han terminado de seleccionar los graneros" << endl;
+		selectionDone = true;
+		//Once all selection is done set all the hens to draw again
+		repaintHens();
+	}
+}
+
+void CSGame::moveHensBackwards()
+{
+	int totalHensOrigin = 0;
+	int firstHen = totalPlayers;
+	for (int i = firstHen; i < dynamicScenario->count(); i++)
+	{
+		auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
+		hen->moveBackwards();
+		if (hen->alreadyInOrigin()) totalHensOrigin++;
+	}
+
+	if (totalHensOrigin == TOTAL_HENS) {
+		//active check winner
+		showWinner = true;
+		hensOutPainted = false;
 	}
 }
 

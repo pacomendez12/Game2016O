@@ -12,6 +12,8 @@ public:
 		ScenarioPosition *scenarioPosition, bool paint, VECTOR4D objectColor);
 	double getX();
 	double getY();
+	double getInitialX();
+	double getInitialY();
 	double getZ();
 	double getScale();
 	int getObjectId();
@@ -36,6 +38,8 @@ protected:
 	double d_z;
 	double d_scale;
 	bool b_paint;
+	double d_initialX;
+	double d_initialY;
 	CMesh* m_objectMesh;
 	VECTOR4D v4D_objectColor;
 	
