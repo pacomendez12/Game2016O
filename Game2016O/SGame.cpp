@@ -205,7 +205,10 @@ void CSGame::OnEntry()
 		player->Hide();
 		m_vPlayers.push_back(player);
 		fixingSelector();
-		
+		MAIN->m_pSndManager->ClearEngine();
+		m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\Banjo.wav", SND_BACKGROUND);
+		/*if (m_pSndBackground)
+			m_pSndBackground->Play(true);*/
 	}
 
 }
@@ -299,6 +302,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				break;
 			case JOY_BUTTON_A_PRESSED: {
 				cout << "Button A pressed fomr joystic: " << Action->m_nSource << endl;
+				m_pSndBackground->Play(true);
 				cout << game << endl;
 					map<int, ScenarioObject *> objects = dynamicScenario->getScenarioObjects();
 					map<int, ScenarioObject *>::iterator iterator;
@@ -442,6 +446,8 @@ void CSGame::manageScenarioObjectUpdates(){
 	if (!userInteraction && m_dHensInBarn == TOTAL_HENS) {
 		// Stop hens to move
 		game = false;
+
+		m_pSndBackground->Stop();
 
 		// Allow user to move
 		userInteraction = true;

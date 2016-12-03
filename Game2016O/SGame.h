@@ -18,6 +18,10 @@
 #define TOTAL_PLAYERS 3
 #define TOTAL_BARNS 4
 #define Z_MARKER_POSITION 2.5
+#define SND_HEN1 1
+#define SND_HEN2 2
+#define SND_HEN3 3
+#define SND_BACKGROUND 4
 
 using namespace std;
 
@@ -113,6 +117,7 @@ protected:
 	CMesh *barnMesh;
 	CMesh *henMesh;
 	CMesh *sphereMesh;
+	CSndControl* m_pSndBackground;
 
 	// General Variables
 	CMesh *m_pTable;

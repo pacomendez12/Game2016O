@@ -101,7 +101,7 @@ void CSMainMenu::OnEntry()
 	m_nOption = DEFAULT_BUTTON;
 	m_vMenuButtons[m_nOption].state = ButtonState::OVER;
 
-	MAIN->m_pSndManager->ClearEngine();
+	//MAIN->m_pSndManager->ClearEngine();
 	MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\Explosion.wav", 1);
 	m_fOffsetX = 0.0f;
 	m_fOffsetY = 0.0f;
