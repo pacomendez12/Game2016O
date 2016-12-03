@@ -18,6 +18,10 @@
 #define TOTAL_PLAYERS 3
 #define TOTAL_BARNS 4
 #define Z_MARKER_POSITION 2.5
+#define SND_HEN1 1
+#define SND_HEN2 2
+#define SND_HEN3 3
+#define SND_BACKGROUND 4
 
 using namespace std;
 
@@ -43,17 +47,22 @@ private:
 	ScenarioObject * m_pSelecter;
 	CSGame *m_pOwner;
 
+	static vector<bool> m_vBoardBarnsChoosed;
+
 public:
 	CPlayer() {} // avoid using this
 	CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecter, CSGame *i_pOwner);
 
 	void MoveSelector(MoveEnum move);
-	void MoveSelector(int barn);
+	bool MoveSelector(int barn);
 	void ChooseBarn();
 	inline int GetCurrentBarnChoosed() { return m_dCurrentBarn; }
 	inline void Show() { m_pSelecter->setPaint(true); }
 	inline void Hide() { m_pSelecter->setPaint(false); }
 	inline const char * GetPlayerName() { return m_szName; }
+	inline ScenarioObject *GetScenarioObject() { return m_pSelecter; }
+	inline static void InitializeBoard(int total) { m_vBoardBarnsChoosed.resize(total, false); }
+	inline bool BarnIsChoosed() { return m_bBarnChoosed; }
 };
 
 struct GAMEDGRAM
@@ -108,6 +117,7 @@ protected:
 	CMesh *barnMesh;
 	CMesh *henMesh;
 	CMesh *sphereMesh;
+	CSndControl* m_pSndBackground;
 
 	// General Variables
 	CMesh *m_pTable;
@@ -132,7 +142,8 @@ protected:
 	// Game actions, control and configuration
 	void manageScenarioObjectUpdates();
 	void createScenarioElements(int totalSpheres);
-	void verifyHensInBarn();
+	void fixingSelector();
+	void OwnBarn(CPlayer *player);
 
 	// User control selection and score
 	int totalPlayers;

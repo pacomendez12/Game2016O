@@ -29,7 +29,7 @@ void Scenario::paintScenarioObjects(CDXBasicPainter* m_pDXPainter)
 
 			MATRIX4D scaling = Scaling(scenarioObject->getScale(), scenarioObject->getScale(), scenarioObject->getScale());
 			MATRIX4D traslation = Translation(scenarioObject->getX(), scenarioObject->getY(), scenarioObject->getZ());
-			MATRIX4D rotation = RotationZ(3.1416 * (-6 / 2.0));
+			MATRIX4D rotation = RotationZ(3.1416 /** (-2 / 2.0)*/);
 
 			// Object in it's right position and size
 			m_pDXPainter->m_Params.World =  scaling * traslation;

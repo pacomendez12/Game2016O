@@ -19,11 +19,11 @@ void CSIntroduction::OnEntry()
 		printf("Explosion load success...\n");
 	else
 		printf("Explosion load failed...\n");
-	m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\FFX.wav", SND_BACKGROUND);
+	m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\introduction.wav", SND_BACKGROUND);
 	if (m_pSndBackground)
 		m_pSndBackground->Play(false);
 	SetTimer(MAIN->m_hWnd, 1, 5000, NULL);
-	SetTimer(MAIN->m_hWnd, 2, 1000, NULL);
+	//SetTimer(MAIN->m_hWnd, 2, 1000, NULL);
 	fflush(stdout);
 }
 #include "HSM\EventWin32.h"
@@ -68,8 +68,8 @@ unsigned long CSIntroduction::OnEvent(CEventBase * pEvent)
 				}
 				if (2 == pWin32->m_wParam)
 				{
-					KillTimer(MAIN->m_hWnd, 2);
-					MAIN->m_pSndManager->PlayFx(SND_EXPLOSION,1,0,0.3);
+					/*KillTimer(MAIN->m_hWnd, 2);
+					MAIN->m_pSndManager->PlayFx(SND_EXPLOSION,1,0,0.3);*/
 				}
 				break;
 			case WM_CHAR:
