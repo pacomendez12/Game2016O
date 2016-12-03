@@ -9,6 +9,7 @@
 #include "Graphics\ImageBMP.h"
 
 
+vector<bool> CPlayer::m_vBoardBarnsChoosed;
 
 CPlayer::CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecter, CSGame *i_pOwner) :
 	m_bIsHuman(i_isHuman), m_dJoysticNumber(i_joysticNumber), m_pSelecter(i_pSelecter),
@@ -19,15 +20,19 @@ CPlayer::CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecte
 	MoveSelector(0);
 }
 
-void CPlayer::MoveSelector(int barn)
+bool CPlayer::MoveSelector(int barn)
 {
+	if (m_bBarnChoosed == true) return false;
+	if (m_vBoardBarnsChoosed[barn] == true) return false;
 	m_dCurrentBarn = barn;
 	m_pSelecter->moveTo(m_pOwner->GetBarnPositions()[m_dCurrentBarn]);
 	m_pSelecter->setZ(Z_MARKER_POSITION);
+	return true;
 }
 
 void CPlayer::MoveSelector(MoveEnum move)
 {
+	if (m_bBarnChoosed) return;
 	int current = m_dCurrentBarn;
 	switch (move)
 	{
@@ -47,12 +52,19 @@ void CPlayer::MoveSelector(MoveEnum move)
 		}
 		break;
 	}
-	MoveSelector(current);
+
+	// if is not abailable move to next
+	if (!MoveSelector(current))
+	{
+		m_dCurrentBarn = current;
+		MoveSelector(move);
+	}
 }
 
 void CPlayer::ChooseBarn()
 {
-
+	m_bBarnChoosed = true;
+	m_vBoardBarnsChoosed[GetCurrentBarnChoosed()] = true;
 }
 
 void CSGame::createScenarioElements(int totalSpheres)
@@ -119,6 +131,34 @@ void CSGame::createScenarioElements(int totalSpheres)
 	}
 }
 
+void CSGame::fixingSelector()
+{
+	const int offset = 1;
+	vector<int> playersPerBarn(TOTAL_BARNS, 0);
+	for (auto p : m_vPlayers)
+	{
+		//move z axis
+		auto so = p->GetScenarioObject();
+		//cout << "Z = " <<  << endl;
+		so->setZ(Z_MARKER_POSITION + (offset * playersPerBarn[p->GetCurrentBarnChoosed()]));
+		playersPerBarn[p->GetCurrentBarnChoosed()]++;
+	}
+}
+
+void CSGame::OwnBarn(CPlayer *player)
+{
+	int barn = player->GetCurrentBarnChoosed();
+	for (auto p : m_vPlayers)
+	{
+		if (player == p) continue;
+		if (p->GetCurrentBarnChoosed() == barn)
+		{
+			p->MoveSelector(MoveEnum::RIGHT);
+		}
+	}
+	fixingSelector();
+}
+
 void CSGame::OnEntry()
 {
 	printf("CSGame::OnEntry()\n"); fflush(stdout);
@@ -145,6 +185,7 @@ void CSGame::OnEntry()
 
 	createScenarioElements(TOTAL_HENS);
 
+	CPlayer::InitializeBoard(TOTAL_BARNS);
 	int realPlayers = MAIN->GetRealPlayersNumber();
 	for (int i = 0; i < totalPlayers; i++) {
 		bool isHuman = false;
@@ -159,9 +200,12 @@ void CSGame::OnEntry()
 		auto so = dynamicScenario->getScenarioObect(i);
 
 		// Creating player
+		
 		CPlayer *player = new CPlayer(isHuman, joyPlayer, so, this);
 		player->Hide();
 		m_vPlayers.push_back(player);
+		fixingSelector();
+		
 	}
 
 }
@@ -180,12 +224,19 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			case JOY_AXIS_RIGHT_PRESSED:
 				player->MoveSelector(MoveEnum::RIGHT);
 				cout << "Player: " << player->GetPlayerName() << " is in barn = " << player->GetCurrentBarnChoosed() << endl;
+				fixingSelector();
 				break;
 			case JOY_AXIS_LEFT_PRESSED:
 				player->MoveSelector(MoveEnum::LEFT);
 				cout << "Player: " << player->GetPlayerName() << " is in barn = " << player->GetCurrentBarnChoosed() << endl;
+				fixingSelector();
 				break;
 			case JOY_BUTTON_B_PRESSED:
+				if (player->BarnIsChoosed()) break;
+				player->ChooseBarn();
+				// drop others that are in the same barn when we choose one barn
+				OwnBarn(player);
+
 				cout << "Button B pressed" << endl;
 				for (int i = 0; i < totalBarns; i++) {
 					Barn *barn = dynamic_cast<Barn*>(staticScenario->getScenarioObect(i));
@@ -352,6 +403,10 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
+
+		// Moving the Player selector when two or more are in the same barn
+
+
 		dynamicScenario->paintScenarioObjects(Paint);
 
 
