@@ -5,6 +5,7 @@
 #include "HSM\StateMachineManager.h"
 #include "BlenderImporter.h"
 #include <memory>
+#include <string>
 #include <iostream>
 #include "Graphics\ImageBMP.h"
 
@@ -207,6 +208,11 @@ void CSGame::OnEntry()
 		fixingSelector();
 		MAIN->m_pSndManager->ClearEngine();
 		m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\Banjo.wav", SND_BACKGROUND);
+		for (int i = 0; i < 3; i++)
+		{
+			std::string file = std::string("..\\Assets\\hen") + to_string(i + 1) + std::string(".wav");
+			auto snd = MAIN->m_pSndManager->LoadSoundFx((TCHAR *)file.c_str(), SND_BACKGROUND);
+		}
 		/*if (m_pSndBackground)
 			m_pSndBackground->Play(true);*/
 	}

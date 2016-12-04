@@ -118,6 +118,7 @@ protected:
 	CMesh *henMesh;
 	CMesh *sphereMesh;
 	CSndControl* m_pSndBackground;
+	vector<CSndControl *> m_vHenFxs;
 
 	// General Variables
 	CMesh *m_pTable;
