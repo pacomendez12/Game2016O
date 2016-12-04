@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 #include "Graphics\ImageBMP.h"
-
+#include "ActionEvent.h"
 
 vector<bool> CPlayer::m_vBoardBarnsChoosed;
 
@@ -70,65 +70,112 @@ void CPlayer::ChooseBarn()
 
 void CSGame::createScenarioElements(int totalSpheres)
 {
-	//"casa", "hen", "esfera"
-	barnMesh = MAIN->GetMeshByString("casa");
-	henMesh = MAIN->GetMeshByString("hen");
-	sphereMesh = MAIN->GetMeshByString("esfera");
-
-	markerColors.push_back({255,255,255,0}); // White
-	markerColors.push_back({ 255,0,255,0 }); // Moradp
-	markerColors.push_back({ 0,0,0,0 }); // Black
-
-	barnColors.push_back({ 255,255,0,0 }); // Yellow
-	barnColors.push_back({ 255,0,0,0 }); // Red
-	barnColors.push_back({0, 255, 0, 0}); // Green
-	barnColors.push_back({0, 0, 255, 0}); //Blue
-
+	int barnTotals[] = { 0,0,0,0 };
+	int barnId = 0;
+	int max = 0;
+	int index = 0;
+	int x = 0;
+	int y = 0;
+	int steptsToTarget;
 	int newScenarioObjectId = 0;
-	
-	barnScenarioPositions[0] = new  ScenarioPosition(1.5, -7, 0);
-	barnScenarioPositions[1] = new  ScenarioPosition(0, -2, 0);
-	barnScenarioPositions[2] = new  ScenarioPosition(0, 2.25, 0);
-	barnScenarioPositions[3] = new  ScenarioPosition(1.5, 7, 0);
 
-	// Creating barns
-	for (int i = 0; i < 4; i++)
+	// Setting colors and positions
 	{
-		newScenarioObjectId = staticScenario->getNewScenarioObjectId();
-		staticScenario->addElementToScenario(newScenarioObjectId, new Barn(newScenarioObjectId, 1,
-			new CMesh(*barnMesh), barnScenarioPositions[newScenarioObjectId], true, barnColors[i]));
+		//"casa", "hen", "esfera"
+		barnMesh = MAIN->GetMeshByString("casa");
+		henMesh = MAIN->GetMeshByString("hen");
+		sphereMesh = MAIN->GetMeshByString("esfera");
+
+		markerColors.push_back({ 1, 1, 1,0 }); // White
+		markerColors.push_back({ 1,0, 1,0 }); // Morado
+		markerColors.push_back({ 0,0,0,0 }); // Black
+
+		barnColors.push_back({ 1, 1,0,0 }); // Yellow
+		barnColors.push_back({ 1,0,0,0 }); // Red
+		barnColors.push_back({ 0, 1, 0, 0 }); // Green
+		barnColors.push_back({ 0, 0, 1, 0 }); //Blue
+
+		barnScenarioPositions[0] = new  ScenarioPosition(1.5, -7, 0);
+		barnScenarioPositions[1] = new  ScenarioPosition(0, -2, 0);
+		barnScenarioPositions[2] = new  ScenarioPosition(0, 2.25, 0);
+		barnScenarioPositions[3] = new  ScenarioPosition(1.5, 7, 0);
 	}
 
-	// creating Player selectors
-	for (int i = 0; i < totalPlayers; i++)
-	{ // i and id are the same
-		int id = dynamicScenario->getNewScenarioObjectId();
-		ScenarioObject *so = new ScenarioObject(i, 0.2, new CMesh(*sphereMesh),
-			barnScenarioPositions[i], true, markerColors[i]);
-		so->setZ(Z_MARKER_POSITION);
-		dynamicScenario->addElementToScenario(id, so);
+	// Creating barns
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			newScenarioObjectId = staticScenario->getNewScenarioObjectId();
+			staticScenario->addElementToScenario(newScenarioObjectId,
+				new Barn(newScenarioObjectId,
+					1,
+					new CMesh(*barnMesh),
+					barnScenarioPositions[newScenarioObjectId],
+					true,
+					barnColors[i]));
+		}
+	}
+
+	// Creating Player selectors
+	{
+		for (int i = 0; i < totalPlayers; i++)
+		{ // i and id are the same
+			int id = dynamicScenario->getNewScenarioObjectId();
+			ScenarioObject *so = new ScenarioObject(i, 0.2, new CMesh(*sphereMesh),
+				barnScenarioPositions[i], true, markerColors[i]);
+			so->setZ(Z_MARKER_POSITION);
+			dynamicScenario->addElementToScenario(id, so);
+		}
 	}
 
 	// Creating hens
-	srand(time(NULL));
-	int barnId = 0;
-	int x;
-	int y;
-	int steptsToTarget;
-	for (int i = 0; i < totalSpheres; i++) {
-		barnId = rand() % 4;
-		x = rand() % 100 + 70;
-		y = rand() % 200 - 100;
-		//x = 1;
-		//y = 1;
-		steptsToTarget = rand() % 1000 + 500;
-		//cout << barnId << " (" << x << "," << y << ")" << endl;
-		newScenarioObjectId = dynamicScenario->getNewScenarioObjectId();
-		dynamicScenario->addElementToScenario(
-			newScenarioObjectId,
-			new Hen(newScenarioObjectId, 0.2, new CMesh(*henMesh),
-				new ScenarioPosition(x, y, 0), false, barnScenarioPositions[barnId],
-				steptsToTarget, barnId, {1,1,1,0}));
+	{
+		srand(time(NULL));
+
+		// Painting hen mesh
+		for (int i = 0; i < henMesh->m_Vertices.size(); i++)
+		{
+			henMesh->m_Vertices[i].Color = { 1,1,1,0 };
+		}
+
+		// Getting total hens to a barn
+		for (int i = 0; i < totalSpheres; i++) {
+			barnId = rand() % 4;
+			barnTotals[barnId]++;
+		}
+
+		index = 0;
+		max = barnTotals[0];
+		for (int i = 1; i < 4; i++) {
+			if (barnTotals[i] > max) {
+				max = barnTotals[i];
+				index = i;
+			}
+		}
+
+		for (int i = 0; i < 4; i++) {
+			if (barnTotals[i] == max && index != i) {
+				barnTotals[index] += 5;
+				barnTotals[i] -= 5;
+				break;
+			}
+		}
+
+		// Adding hens to scenario
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < barnTotals[i]; j++) {
+				x = rand() % 50 + 15;
+				y = rand() % 30 - 20;
+				steptsToTarget = rand() % 500 + 200;
+				//cout << barnId << " (" << x << "," << y << ")" << endl;
+				newScenarioObjectId = dynamicScenario->getNewScenarioObjectId();
+				dynamicScenario->addElementToScenario(
+					newScenarioObjectId,
+					new Hen(newScenarioObjectId, 0.2, henMesh,
+						new ScenarioPosition(x, y, 0), false, barnScenarioPositions[i],
+						steptsToTarget, i, { 1,1,1,0 }));
+			}
+		}
 	}
 }
 
@@ -178,6 +225,9 @@ void CSGame::OnEntry()
 
 	game = false;
 	userInteraction = false;
+	selectionDone = false;
+	hensOutPainted = false;
+	showWinner = false;
 	greatestHensInBarn = 0;
 
 	totalPlayers = TOTAL_PLAYERS;
@@ -201,7 +251,6 @@ void CSGame::OnEntry()
 		auto so = dynamicScenario->getScenarioObect(i);
 
 		// Creating player
-		
 		CPlayer *player = new CPlayer(isHuman, joyPlayer, so, this);
 		player->Hide();
 		m_vPlayers.push_back(player);
@@ -219,7 +268,6 @@ void CSGame::OnEntry()
 
 }
 
-#include "ActionEvent.h"
 unsigned long CSGame::OnEvent(CEventBase * pEvent)
 {
 	if (ACTION_EVENT == pEvent->m_ulEventType)
@@ -333,6 +381,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 	{
 		auto Paint = MAIN->m_pDXPainter;
 		auto DXManager = MAIN->m_pDXManager;
+
 		Paint->SetRenderTarget(DXManager->GetMainRTV(), //Backbuffer
 			DXManager->GetMainDSV()); //ZBuffer
 
@@ -365,7 +414,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		};
 		unsigned long FrameIndex[6] = { 0,1,2,2,1,3 };
 
-		MATRIX4D p = Paint->m_Params.Projection;
+		MATRIX4D p = Paint->m_Params.Projection; //* AC;
 		MATRIX4D v = Paint->m_Params.View;
 		MATRIX4D w = Paint->m_Params.World;
 
@@ -380,45 +429,54 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
 			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
-//#if 0
-		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
-			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
-									/*RotationZ(3.141592 / 4) * */ // Orientacion del text
-			Translation(-1, 1, 0); // Posicion del text
-		VECTOR4D blanco = { 1, 1, 1, 1 };
-		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez", blanco);
-//#endif
+		// All game states
+		{
+			// Game when hens are moving
+			if (game) {
+				int firstHen = totalPlayers;
+				for (int i = firstHen; i < dynamicScenario->count(); i++)
+				{
+					auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
+					if (!hen->getPaint()) continue;
 
-		//Limpiando text blender
-		MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
-		m_pCamera->setView(p, v, w);
-		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
-		
-		// Moving elements in scenario
-		if (game) {
-			int firstHen = totalPlayers;
-			for (int i = firstHen; i < dynamicScenario->count(); i++)
-			{
-				auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
-				if (!hen->getPaint()) continue;
+					hen->move();
+					if (hen->alreadyInBarn()) {
+						incrementInBarns.push_back(hen->getBarnId());
+						removeHens.push_back(hen->getObjectId());
+					}
+				}
+				manageHensMovement();
+			}
 
-				hen->move();
-				if (hen->alreadyInBarn()) {
-					incrementInBarns.push_back(hen->getBarnId());
-					removeHens.push_back(hen->getObjectId());
+			// Game when user interacts
+			if (userInteraction) {
+				// Check that the selection has been done by all users
+				if (!selectionDone) {
+					verifyUserSelectionDone();
+				}
+				if (hensOutPainted) {
+					moveHensBackwards();
 				}
 			}
-			manageScenarioObjectUpdates();
+
+			// Game when the winner need to be shown
+			if (showWinner) {
+				cout << "Ya deberia renderear " << endl;
+				// Show the total of hens in each barn with text
+				// with blender text
+				drawHensInBarn();
+
+				//Limpiando text blender
+				MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
+			}
 		}
+
+		m_pCamera->setView(p, v, w);
+		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
 
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
-
-		// Moving the Player selector when two or more are in the same barn
-
-
 		dynamicScenario->paintScenarioObjects(Paint);
-
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
@@ -432,7 +490,7 @@ void CSGame::OnExit()
 	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 
-void CSGame::manageScenarioObjectUpdates(){
+void CSGame::manageHensMovement(){
 	int incrementSize = incrementInBarns.size();
 	int removeHensSize = removeHens.size();
 	m_dHensInBarn += removeHensSize;
@@ -469,6 +527,79 @@ void CSGame::createUserSelectionMarker()
 	for (auto player : m_vPlayers) {
 		player->Show();
 	}
+}
+
+void CSGame::repaintHens()
+{
+	hensOutPainted = true;
+
+	// Repaint all the hens
+	int firstHen = totalPlayers;
+	for (int i = firstHen; i < dynamicScenario->count(); i++)
+	{
+		auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
+		hen->setPaint(true);
+		hen->moveBackwards();
+	}
+}
+
+void CSGame::verifyUserSelectionDone()
+{
+	bool allSelected = true;
+	for (int i = 0; i < totalPlayers; i++) {
+		allSelected &= m_vPlayers[i]->BarnIsChoosed();
+	}
+	if (allSelected) {
+		cout << "Se han terminado de seleccionar los graneros" << endl;
+		selectionDone = true;
+		//Once all selection is done set all the hens to draw again
+		repaintHens();
+	}
+}
+
+void CSGame::moveHensBackwards()
+{
+	int totalHensOrigin = 0;
+	int firstHen = totalPlayers;
+	for (int i = firstHen; i < dynamicScenario->count(); i++)
+	{
+		auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
+		hen->moveBackwards();
+		if (hen->alreadyInOrigin()) totalHensOrigin++;
+	}
+
+	if (totalHensOrigin == TOTAL_HENS) {
+		//active check winner
+		showWinner = true;
+		hensOutPainted = false;
+		userInteraction = false;
+	}
+}
+
+void CSGame::drawHensInBarn()
+{
+	VECTOR4D color = { 1, 1, 1, 1 };
+
+	Barn *barn0 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(0));
+	Barn *barn1 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(1));
+	Barn *barn2 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(2));
+	Barn *barn3 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(3));
+
+	// Translation Matrix
+
+	MATRIX4D matrix0 = Translation(0.5, -0.5, 0) * //Character centre
+			Scaling(0.05, 0.1, 1) * // Character size
+			Translation(-0.55, 0.13, 0); // Text Position/
+	MATRIX4D matrix1 = Translation(0.5, -0.5, 0) * Scaling(0.05, 0.1, 1) * Translation(-0.18, 0.175, 0);
+	MATRIX4D matrix2 = Translation(0.5, -0.5, 0) * Scaling(0.05, 0.1, 1) * Translation(0.12, 0.175, 0);
+	MATRIX4D matrix3 = Translation(0.5, -0.5, 0) * Scaling(0.05, 0.1, 1) * Translation(0.515, 0.13, 0);
+
+	// Rendering text
+	MAIN->m_pTextRenderer->RenderText(matrix0, to_string(barn0->getHensInHouse()).c_str(), color);
+	MAIN->m_pTextRenderer->RenderText(matrix1, to_string(barn1->getHensInHouse()).c_str(), color);
+	MAIN->m_pTextRenderer->RenderText(matrix2, to_string(barn2->getHensInHouse()).c_str(), color);
+	MAIN->m_pTextRenderer->RenderText(matrix3, to_string(barn3->getHensInHouse()).c_str(), color);
+
 }
 
 CSGame::CSGame()

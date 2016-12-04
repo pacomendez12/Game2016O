@@ -3,6 +3,7 @@
 #include <WS2tcpip.h>
 #include <map>
 #include <time.h>
+#include <string>
 #include "HSM\StateBase.h"
 #include "Graphics\Mesh.h"
 #include "Camera.h"
@@ -15,9 +16,9 @@
 
 #define CLSID_CSGame 0x33221100
 #define TOTAL_HENS 50
-#define TOTAL_PLAYERS 3
+#define TOTAL_PLAYERS 1
 #define TOTAL_BARNS 4
-#define Z_MARKER_POSITION 2.5
+#define Z_MARKER_POSITION 2.8
 #define SND_HEN1 1
 #define SND_HEN2 2
 #define SND_HEN3 3
@@ -104,6 +105,7 @@ struct GAMEDGRAM
 class CSGame :
 	public CStateBase
 {
+
 public:
 	map<unsigned long, CPlayer> m_mapLocalPlayers;  //Ordinal,Jugador
 	map<unsigned long, CPlayer> m_mapRemotePlayers; //Ordinal,Jugador
@@ -141,7 +143,7 @@ protected:
 	void OnExit();
 
 	// Game actions, control and configuration
-	void manageScenarioObjectUpdates();
+	void manageHensMovement();
 	void createScenarioElements(int totalSpheres);
 	void fixingSelector();
 	void OwnBarn(CPlayer *player);
@@ -151,10 +153,18 @@ protected:
 	int totalBarns;
 	int greatestHensInBarn;
 	int greatestBarnId;
+	bool selectionDone;
+	bool hensOutPainted;
+	bool showWinner;
 	vector<CPlayer *> m_vPlayers;
 	vector<VECTOR4D> markerColors;
 	vector<VECTOR4D> barnColors;
+	vector<CMesh*> coloredMeshes;
 	void createUserSelectionMarker();
+	void repaintHens();
+	void verifyUserSelectionDone();
+	void moveHensBackwards();
+	void drawHensInBarn();
 
 	// BG
 	ID3D11ShaderResourceView* m_pSRVBackground;

@@ -13,6 +13,8 @@ ScenarioObject::ScenarioObject(int objectId, CMesh * mesh, bool paint)
 	d_x = 0.0;
 	d_y = 0.0;
 	d_z = 0.0;
+	d_initialX = d_x;
+	d_initialY = d_y;
 	d_scale = 1.0;
 	b_paint = paint;
 	v4D_objectColor = { 1,1,1,0 };
@@ -26,9 +28,16 @@ ScenarioObject::ScenarioObject(int objectId, double scale, CMesh * mesh,
 	d_x = scenarioPosition->getX();
 	d_y = scenarioPosition->getY();
 	d_z = scenarioPosition->getZ();
+	d_initialX = d_x;
+	d_initialY = d_y;
 	d_scale = scale;
 	b_paint = paint;
 	v4D_objectColor = objectColor;
+
+	for (int i = 0; i < m_objectMesh->m_Vertices.size(); i++)
+	{
+		m_objectMesh->m_Vertices[i].Color = objectColor;
+	}
 }
 
 double ScenarioObject::getX()
@@ -39,6 +48,16 @@ double ScenarioObject::getX()
 double ScenarioObject::getY()
 {
 	return d_y;
+}
+
+double ScenarioObject::getInitialX()
+{
+	return d_initialX;
+}
+
+double ScenarioObject::getInitialY()
+{
+	return d_initialY;
 }
 
 double ScenarioObject::getZ()
