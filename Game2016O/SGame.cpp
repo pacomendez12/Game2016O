@@ -375,6 +375,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 	{
 		auto Paint = MAIN->m_pDXPainter;
 		auto DXManager = MAIN->m_pDXManager;
+
 		Paint->SetRenderTarget(DXManager->GetMainRTV(), //Backbuffer
 			DXManager->GetMainDSV()); //ZBuffer
 
@@ -407,7 +408,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		};
 		unsigned long FrameIndex[6] = { 0,1,2,2,1,3 };
 
-		MATRIX4D p = Paint->m_Params.Projection;
+		MATRIX4D p = Paint->m_Params.Projection; //* AC;
 		MATRIX4D v = Paint->m_Params.View;
 		MATRIX4D w = Paint->m_Params.World;
 
@@ -422,42 +423,46 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
 			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
-		// Game when hens are moving
-		if (game) {
-			int firstHen = totalPlayers;
-			for (int i = firstHen; i < dynamicScenario->count(); i++)
-			{
-				auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
-				if (!hen->getPaint()) continue;
+		// All game states
+		{
+			// Game when hens are moving
+			if (game) {
+				int firstHen = totalPlayers;
+				for (int i = firstHen; i < dynamicScenario->count(); i++)
+				{
+					auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
+					if (!hen->getPaint()) continue;
 
-				hen->move();
-				if (hen->alreadyInBarn()) {
-					incrementInBarns.push_back(hen->getBarnId());
-					removeHens.push_back(hen->getObjectId());
+					hen->move();
+					if (hen->alreadyInBarn()) {
+						incrementInBarns.push_back(hen->getBarnId());
+						removeHens.push_back(hen->getObjectId());
+					}
+				}
+				manageHensMovement();
+			}
+
+			// Game when user interacts
+			if (userInteraction) {
+				// Check that the selection has been done by all users
+				if (!selectionDone) {
+					verifyUserSelectionDone();
+				}
+				if (hensOutPainted) {
+					moveHensBackwards();
 				}
 			}
-			manageHensMovement();
-		}
 
-		// Game when user interacts
-		if (userInteraction) {
-			// Check that the selection has been done by all users
-			if (!selectionDone) {
-				verifyUserSelectionDone();
+			// Game when the winner need to be shown
+			if (showWinner) {
+				cout << "Ya deberia renderear " << endl;
+				// Show the total of hens in each barn with text
+				// with blender text
+				drawHensInBarn();
+
+				//Limpiando text blender
+				MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
 			}
-			if (hensOutPainted) {
-				moveHensBackwards();
-			}
-		}
-
-		// Game when the winner need to be shown
-		if (showWinner) {
-			cout << "Ya deberia renderear " << endl;
-			// Show the total of hens in each barn with text
-			drawHensInBarn();
-
-			//Limpiando text blender
-			MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
 		}
 
 		m_pCamera->setView(p, v, w);
