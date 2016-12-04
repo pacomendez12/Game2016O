@@ -163,8 +163,7 @@ protected:
 	void repaintHens();
 	void verifyUserSelectionDone();
 	void moveHensBackwards();
-	void drawHensInBarn(int x);
-	//void renderScore(int score);
+	void drawHensInBarn();
 
 	// BG
 	ID3D11ShaderResourceView* m_pSRVBackground;

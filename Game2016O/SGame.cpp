@@ -422,18 +422,6 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
 			D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
 
-		if (showWinner) {
-			cout << "Ya deberia renderear " << endl;
-			// Show the total of hens in each barn with text
-			drawHensInBarn(1000);
-
-			//Limpiando text blender
-			MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
-		}
-
-		m_pCamera->setView(p, v, w);
-		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
-
 		// Game when hens are moving
 		if (game) {
 			int firstHen = totalPlayers;
@@ -461,6 +449,19 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				moveHensBackwards();
 			}
 		}
+
+		// Game when the winner need to be shown
+		if (showWinner) {
+			cout << "Ya deberia renderear " << endl;
+			// Show the total of hens in each barn with text
+			drawHensInBarn();
+
+			//Limpiando text blender
+			MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
+		}
+
+		m_pCamera->setView(p, v, w);
+		Paint->m_Params.Flags = LIGHTING_DIFFUSE;
 
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
@@ -564,14 +565,30 @@ void CSGame::moveHensBackwards()
 	}
 }
 
-void CSGame::drawHensInBarn(int totalHens)
+void CSGame::drawHensInBarn()
 {
-	MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
-		Scaling(0.05, 0.1, 1) * // Tamanio del caracter
-								/*RotationZ(3.141592 / 4) * */ // Orientacion del text
-		Translation(-1, 1, 0); // Posicion del text
-	VECTOR4D blanco = { 1, 1, 1, 1 };
-	MAIN->m_pTextRenderer->RenderText(ST, to_string(totalHens).c_str(), blanco);
+	VECTOR4D color = { 1, 1, 1, 1 };
+
+	Barn *barn0 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(0));
+	Barn *barn1 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(1));
+	Barn *barn2 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(2));
+	Barn *barn3 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(3));
+
+	// Translation Matrix
+
+	MATRIX4D matrix0 = Translation(0.5, -0.5, 0) * //Character centre
+			Scaling(0.05, 0.1, 1) * // Character size
+			Translation(-0.55, 0.13, 0); // Text Position/
+	MATRIX4D matrix1 = Translation(0.5, -0.5, 0) * Scaling(0.05, 0.1, 1) * Translation(-0.18, 0.175, 0);
+	MATRIX4D matrix2 = Translation(0.5, -0.5, 0) * Scaling(0.05, 0.1, 1) * Translation(0.12, 0.175, 0);
+	MATRIX4D matrix3 = Translation(0.5, -0.5, 0) * Scaling(0.05, 0.1, 1) * Translation(0.515, 0.13, 0);
+
+	// Rendering text
+	MAIN->m_pTextRenderer->RenderText(matrix0, to_string(barn0->getHensInHouse()).c_str(), color);
+	MAIN->m_pTextRenderer->RenderText(matrix1, to_string(barn1->getHensInHouse()).c_str(), color);
+	MAIN->m_pTextRenderer->RenderText(matrix2, to_string(barn2->getHensInHouse()).c_str(), color);
+	MAIN->m_pTextRenderer->RenderText(matrix3, to_string(barn3->getHensInHouse()).c_str(), color);
+
 }
 
 CSGame::CSGame()
