@@ -62,7 +62,8 @@ unsigned long CSIntroduction::OnEvent(CEventBase * pEvent)
 			case WM_TIMER:
 				if (1 == pWin32->m_wParam)
 				{
-					m_pSMOwner->Transition(CLSID_CSMainMenu);
+					//m_pSMOwner->Transition(CLSID_CSMainMenu);
+					m_pSMOwner->Transition(CLSID_CSGame);
 					InvalidateRect(MAIN->m_hWnd, NULL, false);
 					return 0;
 				}

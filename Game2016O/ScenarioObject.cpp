@@ -145,4 +145,6 @@ VECTOR4D ScenarioObject::getObjectColor() {
 
 ScenarioObject::~ScenarioObject()
 {
+	/* TODO: Fix this memory leak*/
+	//delete m_objectMesh;
 }

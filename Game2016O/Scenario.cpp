@@ -71,4 +71,8 @@ Scenario::Scenario()
 
 Scenario::~Scenario()
 {
+	for (auto it : scenarioObjects)
+	{
+		delete it.second;
+	}
 }

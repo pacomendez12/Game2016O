@@ -20,11 +20,12 @@ public:
 	boolean alreadyInBarn();
 	boolean alreadyInOrigin();
 	virtual ~Hen();
+	double incrementX;
+	double incrementY;
 protected:
 	double slope;
 	double direction;
-	double incrementX;
-	double incrementY;
+
 	double traveledDistance;
 	double targetDistance;
 	int i_barnId;

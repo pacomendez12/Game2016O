@@ -9,6 +9,8 @@
 #include <iostream>
 #include "Graphics\ImageBMP.h"
 #include "ActionEvent.h"
+#include "HSM\EventWin32.h"
+#include <atlstr.h>
 
 vector<bool> CPlayer::m_vBoardBarnsChoosed;
 
@@ -67,6 +69,8 @@ void CPlayer::ChooseBarn()
 	m_bBarnChoosed = true;
 	m_vBoardBarnsChoosed[GetCurrentBarnChoosed()] = true;
 }
+
+/* ***************************** SGame code *********************************************************/
 
 void CSGame::createScenarioElements(int totalSpheres)
 {
@@ -188,11 +192,16 @@ void CSGame::fixingSelector()
 		//move z axis
 		auto so = p->GetScenarioObject();
 		//cout << "Z = " <<  << endl;
-		so->setZ(Z_MARKER_POSITION + (offset * playersPerBarn[p->GetCurrentBarnChoosed()]));
+		if (!p->BarnIsChoosed())
+			so->setZ(Z_MARKER_POSITION + (offset * playersPerBarn[p->GetCurrentBarnChoosed()]));
 		playersPerBarn[p->GetCurrentBarnChoosed()]++;
 	}
 }
 
+
+// se apropia de un granero y hace que si algun otro player
+// tenia su selector sobre el granero seleccionado, sus 
+// selectores se muevan al siguiente granero a la derecha
 void CSGame::OwnBarn(CPlayer *player)
 {
 	int barn = player->GetCurrentBarnChoosed();
@@ -205,6 +214,8 @@ void CSGame::OwnBarn(CPlayer *player)
 		}
 	}
 	fixingSelector();
+	auto so = player->GetScenarioObject();
+	so->setZ(Z_MARKER_POSITION - 0.7);
 }
 
 void CSGame::OnEntry()
@@ -213,6 +224,8 @@ void CSGame::OnEntry()
 	
 	staticScenario = new Scenario();
 	dynamicScenario = new Scenario();
+
+	m_pCamera = nullptr;
 
 	m_pCamera = new CCamera(MAIN->m_pDXPainter);
 	m_pCamera->ChangeView(CCamera::ViewMode::Default);
@@ -237,8 +250,10 @@ void CSGame::OnEntry()
 	createScenarioElements(TOTAL_HENS);
 
 	CPlayer::InitializeBoard(TOTAL_BARNS);
+	m_vPlayers.clear();
 	int realPlayers = MAIN->GetRealPlayersNumber();
-	for (int i = 0; i < totalPlayers; i++) {
+	for (int i = 0; i < totalPlayers; i++)
+	{
 		bool isHuman = false;
 		int joyPlayer = -1;
 		if (realPlayers)
@@ -254,22 +269,82 @@ void CSGame::OnEntry()
 		CPlayer *player = new CPlayer(isHuman, joyPlayer, so, this);
 		player->Hide();
 		m_vPlayers.push_back(player);
-		fixingSelector();
-		MAIN->m_pSndManager->ClearEngine();
-		m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\Banjo.wav", SND_BACKGROUND);
-		for (int i = 0; i < 3; i++)
-		{
-			std::string file = std::string("..\\Assets\\hen") + to_string(i + 1) + std::string(".wav");
-			auto snd = MAIN->m_pSndManager->LoadSoundFx((TCHAR *)file.c_str(), SND_BACKGROUND);
-		}
-		/*if (m_pSndBackground)
-			m_pSndBackground->Play(true);*/
 	}
+	fixingSelector();
+
+
+	// loading sounds
+	MAIN->m_pSndManager->ClearEngine();
+	m_vHenFxs.clear();
+	MAIN->m_pSndManager->ClearEngine();
+	m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\Banjo.wav", SND_BACKGROUND);
+
+
+	auto snd = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\hen1.wav", SND_HEN1);
+	if (snd)
+	{
+		m_vHenFxs.push_back(snd);
+	}
+	else
+	{
+		std::cout << "failed when opening ..\\Assets\\hen1.wav file" << std::endl;
+	}
+
+	snd = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\hen2.wav", SND_HEN2);
+	if (snd)
+	{
+		m_vHenFxs.push_back(snd);
+	}
+	else
+	{
+		std::cout << "failed when opening ..\\Assets\\hen2.wav file" << std::endl;
+	}
+
+	snd = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\hen3.wav", SND_HEN3);
+	if (snd)
+	{
+		m_vHenFxs.push_back(snd);
+	}
+	else
+	{
+		std::cout << "failed when opening ..\\Assets\\hen3.wav file" << std::endl;
+	}
+		
+
+
+	/*if (m_pSndBackground)
+		m_pSndBackground->Play(true);*/
+
 
 }
 
 unsigned long CSGame::OnEvent(CEventBase * pEvent)
 {
+	if (EVENT_WIN32 == pEvent->m_ulEventType)
+	{
+		CEventWin32* pWin32 = (CEventWin32*)pEvent;
+		switch (pWin32->m_msg)
+		{
+		case WM_TIMER:
+			if (SND_HEN1 == pWin32->m_wParam || SND_HEN2 == pWin32->m_wParam ||
+				SND_HEN3 == pWin32->m_wParam)
+			{
+				KillTimer(MAIN->m_hWnd, pWin32->m_wParam);
+				MAIN->m_pSndManager->PlayFx(pWin32->m_wParam, 1, 0, 1);
+				std::cout << "Timer Hen " << pWin32->m_wParam << std::endl;
+			}
+			break;
+		case WM_CHAR:
+			switch (pWin32->m_wParam)
+			{
+			case 'r':
+				m_pSMOwner->Transition(CLSID_CSGame);
+				InvalidateRect(MAIN->m_hWnd, nullptr, false);
+				return 0;
+				break;
+			}
+		}
+	}
 	if (ACTION_EVENT == pEvent->m_ulEventType)
 	{
 		auto Action = (CActionEvent *)pEvent;
@@ -328,7 +403,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			float Stimulus;
 			switch (Action->m_nAction)
 			{
-			case JOY_AXIS_RX:
+			/*case JOY_AXIS_RX:
 				//Dead zone
 				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
 				if (Stimulus != 0.0){
@@ -353,10 +428,15 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				if (Stimulus != 0.0){
 					m_pCamera->RotateYAxe(Stimulus);
 				}
-				break;
+				break;*/
 			case JOY_BUTTON_A_PRESSED: {
 				cout << "Button A pressed fomr joystic: " << Action->m_nSource << endl;
 				m_pSndBackground->Play(true);
+				for (int i = 0; i < 3; i++)
+				{
+					int timeTimer = rand() % 3000 + (1500 * (i + 1));
+					SetTimer(MAIN->m_hWnd, i + 1, timeTimer, nullptr);
+				}
 				cout << game << endl;
 					map<int, ScenarioObject *> objects = dynamicScenario->getScenarioObjects();
 					map<int, ScenarioObject *>::iterator iterator;
@@ -486,7 +566,19 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 void CSGame::OnExit()
 {
 	//SAFE_DELETE(m_pGeometry);
-	SAFE_DELETE(m_pCamera)
+	SAFE_DELETE(m_pCamera);
+	m_pSndBackground->Stop();
+	for (auto snd : m_vHenFxs)
+	{
+		snd->Stop();
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		KillTimer(MAIN->m_hWnd, i + 1);
+	}
+	SAFE_DELETE(staticScenario);
+	SAFE_DELETE(dynamicScenario);
 	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 
@@ -539,6 +631,13 @@ void CSGame::repaintHens()
 	{
 		auto hen = dynamic_cast<Hen*>(dynamicScenario->getScenarioObect(i));
 		hen->setPaint(true);
+		// increment velocity to make it funy
+		hen->incrementX *= 2.5;
+		hen->incrementY *= 2.5;
+
+		// change mesh direction
+
+		// move backwards
 		hen->moveBackwards();
 	}
 }
@@ -554,6 +653,11 @@ void CSGame::verifyUserSelectionDone()
 		selectionDone = true;
 		//Once all selection is done set all the hens to draw again
 		repaintHens();
+
+		//start music again
+		m_pSndBackground->SetSpeed(1.09f);
+		m_pSndBackground->SetPlayPosition(0);
+		m_pSndBackground->Play(true);
 	}
 }
 
@@ -573,6 +677,7 @@ void CSGame::moveHensBackwards()
 		showWinner = true;
 		hensOutPainted = false;
 		userInteraction = false;
+		m_pSndBackground->Stop();
 	}
 }
 

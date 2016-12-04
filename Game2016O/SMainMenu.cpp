@@ -153,12 +153,14 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 			{
 			case JUGAR:
 				m_pSMOwner->Transition(CLSID_CSGame);
+				InvalidateRect(MAIN->m_hWnd, nullptr, false);
 				return 0;
 			case SALIR:
 				exit(EXIT_SUCCESS);
 			default:
 				// por ahora
 				m_pSMOwner->Transition(CLSID_CSGame);
+				InvalidateRect(MAIN->m_hWnd, nullptr, false);
 				return 0;
 			}
 			

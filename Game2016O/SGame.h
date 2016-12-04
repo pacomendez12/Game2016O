@@ -16,7 +16,7 @@
 
 #define CLSID_CSGame 0x33221100
 #define TOTAL_HENS 50
-#define TOTAL_PLAYERS 1
+#define TOTAL_PLAYERS 2
 #define TOTAL_BARNS 4
 #define Z_MARKER_POSITION 2.8
 #define SND_HEN1 1
@@ -159,7 +159,7 @@ protected:
 	vector<CPlayer *> m_vPlayers;
 	vector<VECTOR4D> markerColors;
 	vector<VECTOR4D> barnColors;
-	vector<CMesh*> coloredMeshes;
+	//vector<CMesh*> coloredMeshes;
 	void createUserSelectionMarker();
 	void repaintHens();
 	void verifyUserSelectionDone();
