@@ -10,9 +10,11 @@
 #include "Graphics\ImageBMP.h"
 #include "ActionEvent.h"
 #include "HSM\EventWin32.h"
+#include "ComputerPlayer.h"
 #include <atlstr.h>
 
 vector<bool> CPlayer::m_vBoardBarnsChoosed;
+CRITICAL_SECTION CPlayer::m_csLock;
 
 CPlayer::CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecter, CSGame *i_pOwner) :
 	m_bIsHuman(i_isHuman), m_dJoysticNumber(i_joysticNumber), m_pSelecter(i_pSelecter),
@@ -25,12 +27,21 @@ CPlayer::CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecte
 
 bool CPlayer::MoveSelector(int barn)
 {
-	if (m_bBarnChoosed == true) return false;
-	if (m_vBoardBarnsChoosed[barn] == true) return false;
-	m_dCurrentBarn = barn;
-	m_pSelecter->moveTo(m_pOwner->GetBarnPositions()[m_dCurrentBarn]);
-	m_pSelecter->setZ(Z_MARKER_POSITION);
-	return true;
+	bool ret = true;
+	EnterCriticalSection(&m_csLock);
+	if (m_bBarnChoosed == true || m_vBoardBarnsChoosed[barn] == true)
+	{
+		ret = false;
+	}
+	else 
+	{
+		m_dCurrentBarn = barn;
+		m_pSelecter->moveTo(m_pOwner->GetBarnPositions()[m_dCurrentBarn]);
+		m_pSelecter->setZ(Z_MARKER_POSITION);
+		m_pOwner->fixingSelector();
+	}
+	LeaveCriticalSection(&m_csLock);
+	return ret;
 }
 
 void CPlayer::MoveSelector(MoveEnum move)
@@ -64,10 +75,19 @@ void CPlayer::MoveSelector(MoveEnum move)
 	}
 }
 
-void CPlayer::ChooseBarn()
+bool CPlayer::ChooseBarn()
 {
-	m_bBarnChoosed = true;
-	m_vBoardBarnsChoosed[GetCurrentBarnChoosed()] = true;
+	bool ret = false;
+	EnterCriticalSection(&m_csLock);
+	if (!m_vBoardBarnsChoosed[GetCurrentBarnChoosed()])
+	{
+		m_bBarnChoosed = true;
+		m_vBoardBarnsChoosed[GetCurrentBarnChoosed()] = true;
+		ret = true;
+		m_pOwner->OwnBarn(this);
+	}
+	LeaveCriticalSection(&m_csLock);
+	return ret;
 }
 
 /* ***************************** SGame code *********************************************************/
@@ -218,6 +238,32 @@ void CSGame::OwnBarn(CPlayer *player)
 	so->setZ(Z_MARKER_POSITION - 0.7);
 }
 
+void CSGame::StartIaPlayers()
+{
+	/*for (auto p : m_vPlayers)
+	{
+		if (!p->IsHuman())
+		{
+			auto cPlayer = new CComputerPlayer(p, CComputerPlayer::IaLevel::NORMAL);
+			m_vComputerPlayers.push_back(cPlayer);
+		}
+	}*/
+
+	//srand(time(nullptr));
+	for (auto cPlayer : m_vComputerPlayers)
+	{
+		cPlayer->StartPlayer();
+	}
+}
+
+void CSGame::StopIaPlayers()
+{
+	for (auto cPlayer : m_vComputerPlayers)
+	{
+		cPlayer->StopPlayer();
+	}
+}
+
 void CSGame::OnEntry()
 {
 	printf("CSGame::OnEntry()\n"); fflush(stdout);
@@ -249,6 +295,9 @@ void CSGame::OnEntry()
 
 	createScenarioElements(TOTAL_HENS);
 
+	//initialize critical section
+	InitializeCriticalSection(&CPlayer::m_csLock);
+
 	CPlayer::InitializeBoard(TOTAL_BARNS);
 	m_vPlayers.clear();
 	int realPlayers = MAIN->GetRealPlayersNumber();
@@ -269,6 +318,13 @@ void CSGame::OnEntry()
 		CPlayer *player = new CPlayer(isHuman, joyPlayer, so, this);
 		player->Hide();
 		m_vPlayers.push_back(player);
+
+		//adding ia players
+		if (!player->IsHuman())
+		{
+			auto cPlayer = new CComputerPlayer(player, CComputerPlayer::IaLevel::NORMAL);
+			m_vComputerPlayers.push_back(cPlayer);
+		}
 	}
 	fixingSelector();
 
@@ -356,18 +412,17 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			case JOY_AXIS_RIGHT_PRESSED:
 				player->MoveSelector(MoveEnum::RIGHT);
 				cout << "Player: " << player->GetPlayerName() << " is in barn = " << player->GetCurrentBarnChoosed() << endl;
-				fixingSelector();
+				//fixingSelector();
 				break;
 			case JOY_AXIS_LEFT_PRESSED:
 				player->MoveSelector(MoveEnum::LEFT);
 				cout << "Player: " << player->GetPlayerName() << " is in barn = " << player->GetCurrentBarnChoosed() << endl;
-				fixingSelector();
+				//fixingSelector();
 				break;
 			case JOY_BUTTON_B_PRESSED:
 				if (player->BarnIsChoosed()) break;
 				player->ChooseBarn();
-				// drop others that are in the same barn when we choose one barn
-				OwnBarn(player);
+
 
 				cout << "Button B pressed" << endl;
 				for (int i = 0; i < totalBarns; i++) {
@@ -579,6 +634,19 @@ void CSGame::OnExit()
 	}
 	SAFE_DELETE(staticScenario);
 	SAFE_DELETE(dynamicScenario);
+	DeleteCriticalSection(&CPlayer::m_csLock);
+
+	// stopping ia threads
+	StopIaPlayers();
+	for (auto p : m_vPlayers)
+	{
+		delete p;
+	}
+
+	for (auto p : m_vComputerPlayers)
+	{
+		delete p;
+	}
 	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 
@@ -611,6 +679,7 @@ void CSGame::manageHensMovement(){
 
 		// Create user selector
 		createUserSelectionMarker();
+		StartIaPlayers();
 	}
 }
 
@@ -651,6 +720,7 @@ void CSGame::verifyUserSelectionDone()
 	if (allSelected) {
 		cout << "Se han terminado de seleccionar los graneros" << endl;
 		selectionDone = true;
+		StopIaPlayers();
 		//Once all selection is done set all the hens to draw again
 		repaintHens();
 

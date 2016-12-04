@@ -14,9 +14,11 @@
 #include "JumpingHen.h"
 #include "InputProcessor.h"
 
+class CComputerPlayer;
+
 #define CLSID_CSGame 0x33221100
 #define TOTAL_HENS 50
-#define TOTAL_PLAYERS 2
+#define TOTAL_PLAYERS 3
 #define TOTAL_BARNS 4
 #define Z_MARKER_POSITION 2.8
 #define SND_HEN1 1
@@ -39,6 +41,8 @@ public:
 	int m_nHP;
 	char m_szName[32];
 
+	static vector<bool> m_vBoardBarnsChoosed;
+
 private:
 	bool m_bIsHuman;
 	int m_dJoysticNumber;
@@ -48,15 +52,17 @@ private:
 	ScenarioObject * m_pSelecter;
 	CSGame *m_pOwner;
 
-	static vector<bool> m_vBoardBarnsChoosed;
+	
+	
 
 public:
 	CPlayer() {} // avoid using this
 	CPlayer(bool i_isHuman, int i_joysticNumber, ScenarioObject *i_pSelecter, CSGame *i_pOwner);
+	static CRITICAL_SECTION m_csLock; //Mutex
 
 	void MoveSelector(MoveEnum move);
 	bool MoveSelector(int barn);
-	void ChooseBarn();
+	bool ChooseBarn();
 	inline int GetCurrentBarnChoosed() { return m_dCurrentBarn; }
 	inline void Show() { m_pSelecter->setPaint(true); }
 	inline void Hide() { m_pSelecter->setPaint(false); }
@@ -64,6 +70,7 @@ public:
 	inline ScenarioObject *GetScenarioObject() { return m_pSelecter; }
 	inline static void InitializeBoard(int total) { m_vBoardBarnsChoosed.resize(total, false); }
 	inline bool BarnIsChoosed() { return m_bBarnChoosed; }
+	inline bool IsHuman() { return m_bIsHuman; }
 };
 
 struct GAMEDGRAM
@@ -145,8 +152,11 @@ protected:
 	// Game actions, control and configuration
 	void manageHensMovement();
 	void createScenarioElements(int totalSpheres);
-	void fixingSelector();
-	void OwnBarn(CPlayer *player);
+	
+	
+
+	void StartIaPlayers();
+	void StopIaPlayers();
 
 	// User control selection and score
 	int totalPlayers;
@@ -157,6 +167,7 @@ protected:
 	bool hensOutPainted;
 	bool showWinner;
 	vector<CPlayer *> m_vPlayers;
+	vector<CComputerPlayer *> m_vComputerPlayers;
 	vector<VECTOR4D> markerColors;
 	vector<VECTOR4D> barnColors;
 	//vector<CMesh*> coloredMeshes;
@@ -172,5 +183,7 @@ protected:
 public:
 	CSGame();
 	virtual ~CSGame();
+	void OwnBarn(CPlayer *player);
+	void fixingSelector();
 };
 
