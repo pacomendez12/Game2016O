@@ -25,6 +25,8 @@ class CComputerPlayer;
 #define SND_HEN2 2
 #define SND_HEN3 3
 #define SND_BACKGROUND 4
+#define TIMER_START 10
+#define TIMER_START_STEEP 11
 
 using namespace std;
 
@@ -143,6 +145,8 @@ protected:
 	map<int, ScenarioPosition *> barnScenarioPositions;
 	int m_dHensInBarn;
 	map<int, ScenarioObject *>::iterator it;
+	int m_dCurrentCounting;
+	bool m_bShowCounter;
 
 	// HSM methods
 	unsigned long OnEvent(CEventBase* pEvent);
@@ -185,5 +189,10 @@ public:
 	virtual ~CSGame();
 	void OwnBarn(CPlayer *player);
 	void fixingSelector();
+
+	// start hens
+	void StartGame();
+	void StartCounting();
+	void ShowCounting();
 };
 

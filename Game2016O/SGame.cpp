@@ -267,7 +267,7 @@ void CSGame::StopIaPlayers()
 void CSGame::OnEntry()
 {
 	printf("CSGame::OnEntry()\n"); fflush(stdout);
-	
+	m_dCurrentCounting = 4;
 	staticScenario = new Scenario();
 	dynamicScenario = new Scenario();
 
@@ -287,6 +287,7 @@ void CSGame::OnEntry()
 	selectionDone = false;
 	hensOutPainted = false;
 	showWinner = false;
+	m_bShowCounter = false;
 	greatestHensInBarn = 0;
 
 	totalPlayers = TOTAL_PLAYERS;
@@ -366,11 +367,8 @@ void CSGame::OnEntry()
 		std::cout << "failed when opening ..\\Assets\\hen3.wav file" << std::endl;
 	}
 		
-
-
-	/*if (m_pSndBackground)
-		m_pSndBackground->Play(true);*/
-
+	//Start timers
+	SetTimer(MAIN->m_hWnd, TIMER_START, 1000, nullptr);
 
 }
 
@@ -388,6 +386,15 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				KillTimer(MAIN->m_hWnd, pWin32->m_wParam);
 				MAIN->m_pSndManager->PlayFx(pWin32->m_wParam, 1, 0, 1);
 				std::cout << "Timer Hen " << pWin32->m_wParam << std::endl;
+			}
+			else if (TIMER_START == pWin32->m_wParam)
+			{
+				StartCounting();
+			}
+			else if (TIMER_START_STEEP == pWin32->m_wParam)
+			{
+				m_bShowCounter = true;
+				m_dCurrentCounting--;
 			}
 			break;
 		case WM_CHAR:
@@ -486,26 +493,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				break;*/
 			case JOY_BUTTON_A_PRESSED: {
 				cout << "Button A pressed fomr joystic: " << Action->m_nSource << endl;
-				m_pSndBackground->Play(true);
-				for (int i = 0; i < 3; i++)
-				{
-					int timeTimer = rand() % 3000 + (1500 * (i + 1));
-					SetTimer(MAIN->m_hWnd, i + 1, timeTimer, nullptr);
-				}
-				cout << game << endl;
-					map<int, ScenarioObject *> objects = dynamicScenario->getScenarioObjects();
-					map<int, ScenarioObject *>::iterator iterator;
-					int firstHen = totalPlayers;
-					for (int i = firstHen; i < dynamicScenario->count(); i++)
-					{
-						ScenarioObject *scenarioObject = dynamicScenario->getScenarioObect(i);
-						scenarioObject->setPaint(true);
-					}
-					if (!game)
-						game = true;
-					else
-						game = false;
-					cout << game << endl;
+				StartGame();
 			}
 				break;
 			}
@@ -604,6 +592,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				//Limpiando text blender
 				MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
 			}
+			
 		}
 
 		m_pCamera->setView(p, v, w);
@@ -612,6 +601,29 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		// Painting elements in the scenario
 		staticScenario->paintScenarioObjects(Paint);
 		dynamicScenario->paintScenarioObjects(Paint);
+
+		// show counter
+		if (m_bShowCounter)
+		{
+			Paint->SetRenderTarget(DXManager->GetMainRTV(), //Backbuffer
+				DXManager->GetMainDSV()); //ZBuffer
+
+										  // Fondo
+			VECTOR4D DeepBlue = { .2, .3, 4, 0 };
+			DXManager->GetContext()->ClearDepthStencilView(DXManager->GetMainDSV(),
+				D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH, 1.0F, 0.0);
+			MATRIX4D p = Paint->m_Params.Projection; //* AC;
+			MATRIX4D v = Paint->m_Params.View;
+			MATRIX4D w = Paint->m_Params.World;
+
+			Paint->m_Params.Projection =
+				Paint->m_Params.View =
+				Paint->m_Params.World = Identity();
+			ShowCounting();
+			MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
+			m_pCamera->setView(p, v, w);
+			Paint->m_Params.Flags = LIGHTING_DIFFUSE;
+		}
 
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
@@ -775,6 +787,57 @@ void CSGame::drawHensInBarn()
 	MAIN->m_pTextRenderer->RenderText(matrix2, to_string(barn2->getHensInHouse()).c_str(), color);
 	MAIN->m_pTextRenderer->RenderText(matrix3, to_string(barn3->getHensInHouse()).c_str(), color);
 
+}
+
+void CSGame::StartGame()
+{
+	m_pSndBackground->Play(true);
+	for (int i = 0; i < 3; i++)
+	{
+		int timeTimer = rand() % 3000 + (1500 * (i + 1));
+		SetTimer(MAIN->m_hWnd, i + 1, timeTimer, nullptr);
+	}
+	cout << game << endl;
+	map<int, ScenarioObject *> objects = dynamicScenario->getScenarioObjects();
+	map<int, ScenarioObject *>::iterator iterator;
+	int firstHen = totalPlayers;
+	for (int i = firstHen; i < dynamicScenario->count(); i++)
+	{
+		ScenarioObject *scenarioObject = dynamicScenario->getScenarioObect(i);
+		scenarioObject->setPaint(true);
+	}
+	if (!game)
+		game = true;
+	else
+		game = false;
+	cout << game << endl;
+}
+
+void CSGame::StartCounting()
+{
+	KillTimer(MAIN->m_hWnd, TIMER_START);
+	SetTimer(MAIN->m_hWnd, TIMER_START_STEEP, 1000, nullptr);
+}
+
+void CSGame::ShowCounting()
+{
+	if (m_dCurrentCounting)
+	{
+		VECTOR4D color = { 1, 1, 1, 1 };
+
+		MATRIX4D matrix = Translation(0.5, -0.5, 0) * //Character centre
+			Scaling(0.25, 0.5, 1) * // Character size
+			Translation(-0.14, 0.13, 0); // Text Position/
+		// Rendering text
+		MAIN->m_pTextRenderer->RenderText(matrix, to_string(m_dCurrentCounting).c_str(), color);
+	}
+	else
+	{
+		m_bShowCounter = false;
+		KillTimer(MAIN->m_hWnd, TIMER_START_STEEP);
+		StartGame();
+	}
+	
 }
 
 CSGame::CSGame()
