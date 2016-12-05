@@ -50,6 +50,8 @@ public:
 	CDXTextRenderer *m_pTextRenderer;
 	CFX *m_FX;
 
+	int m_dPlayersNumber;
+
 
 	bool        m_bInitializationCorrect;
 	unsigned long GetClassID() { return CLSID_CSMain; }

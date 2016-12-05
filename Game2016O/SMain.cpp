@@ -155,6 +155,8 @@ void CSMain::OnEntry(void)
 	{
 		puts("Unable to create Text renderer"); fflush(stdout);
 	}
+
+	m_dPlayersNumber = 1;
 }
 #include "HSM\EventWin32.h"
 #include "HSM\StateMachineManager.h"

@@ -8,9 +8,9 @@
 #define CLSID_CSMainMenu 0x12345566
 
 enum MenuOptions {
-	JUGAR = 0,
-	UNIRSE,
-	SERVIDOR,
+	_1JUGADOR = 0,
+	_2JUGADORES,
+	_3JUGADORES,
 	SALIR,
 	NUMBER_BUTTONS
 };

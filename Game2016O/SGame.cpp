@@ -11,6 +11,7 @@
 #include "ActionEvent.h"
 #include "HSM\EventWin32.h"
 #include "ComputerPlayer.h"
+#include "SGameOver.h"
 #include <atlstr.h>
 
 vector<bool> CPlayer::m_vBoardBarnsChoosed;
@@ -67,7 +68,7 @@ void CPlayer::MoveSelector(MoveEnum move)
 		break;
 	}
 
-	// if is not abailable move to next
+	// if is not available move to next
 	if (!MoveSelector(current))
 	{
 		m_dCurrentBarn = current;
@@ -94,7 +95,7 @@ bool CPlayer::ChooseBarn()
 
 void CSGame::createScenarioElements(int totalSpheres)
 {
-	int barnTotals[] = { 0,0,0,0 };
+	barnTotals.resize(TOTAL_BARNS);
 	int barnId = 0;
 	int max = 0;
 	int index = 0;
@@ -185,6 +186,9 @@ void CSGame::createScenarioElements(int totalSpheres)
 			}
 		}
 
+		//para testear los graneros
+		//barnTotals = { 20, 15, 10, 5 };
+
 		// Adding hens to scenario
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < barnTotals[i]; j++) {
@@ -240,16 +244,6 @@ void CSGame::OwnBarn(CPlayer *player)
 
 void CSGame::StartIaPlayers()
 {
-	/*for (auto p : m_vPlayers)
-	{
-		if (!p->IsHuman())
-		{
-			auto cPlayer = new CComputerPlayer(p, CComputerPlayer::IaLevel::NORMAL);
-			m_vComputerPlayers.push_back(cPlayer);
-		}
-	}*/
-
-	//srand(time(nullptr));
 	for (auto cPlayer : m_vComputerPlayers)
 	{
 		cPlayer->StartPlayer();
@@ -268,6 +262,17 @@ void CSGame::OnEntry()
 {
 	printf("CSGame::OnEntry()\n"); fflush(stdout);
 	m_dCurrentCounting = 4;
+
+	m_vPlayers.clear();
+	m_vComputerPlayers.clear();
+	m_vHenFxs.clear();
+	incrementInBarns.clear();
+	removeHens.clear();
+	barnTotals.clear();
+	markerColors.clear();
+	barnColors.clear();
+	barnScenarioPositions.clear();
+
 	staticScenario = new Scenario();
 	dynamicScenario = new Scenario();
 
@@ -282,6 +287,16 @@ void CSGame::OnEntry()
 	CImageBMP::DestroyBitmap(background);
 	MAIN->m_pDXManager->GetDevice()->CreateShaderResourceView(backgroundTexture, NULL, &m_pSRVBackground);
 
+	CImageBMP* winner =	CImageBMP::CreateBitmapFromFile("..\\Assets\\winner.bmp", nullptr);
+	auto textureWiner = winner->CreateTexture(MAIN->m_pDXManager);
+	MAIN->m_pDXManager->GetDevice()->CreateShaderResourceView(textureWiner, NULL, &m_pWinnerResourceView);
+	CImageBMP::DestroyBitmap(winner);
+	
+	CImageBMP* loser = CImageBMP::CreateBitmapFromFile("..\\Assets\\loser.bmp", nullptr);
+	auto textureLoser = loser->CreateTexture(MAIN->m_pDXManager);
+	MAIN->m_pDXManager->GetDevice()->CreateShaderResourceView(textureLoser, NULL, &m_pLoserResourceView);
+	CImageBMP::DestroyBitmap(loser);
+
 	game = false;
 	userInteraction = false;
 	selectionDone = false;
@@ -290,7 +305,8 @@ void CSGame::OnEntry()
 	m_bShowCounter = false;
 	greatestHensInBarn = 0;
 
-	totalPlayers = TOTAL_PLAYERS;
+	totalPlayers = MAIN->m_dPlayersNumber;
+	//totalPlayers = TOTAL_PLAYERS;
 	totalBarns = TOTAL_BARNS;
 	m_dHensInBarn = 0;
 
@@ -300,7 +316,6 @@ void CSGame::OnEntry()
 	InitializeCriticalSection(&CPlayer::m_csLock);
 
 	CPlayer::InitializeBoard(TOTAL_BARNS);
-	m_vPlayers.clear();
 	int realPlayers = MAIN->GetRealPlayersNumber();
 	for (int i = 0; i < totalPlayers; i++)
 	{
@@ -331,7 +346,6 @@ void CSGame::OnEntry()
 
 
 	// loading sounds
-	MAIN->m_pSndManager->ClearEngine();
 	m_vHenFxs.clear();
 	MAIN->m_pSndManager->ClearEngine();
 	m_pSndBackground = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\Banjo.wav", SND_BACKGROUND);
@@ -366,10 +380,44 @@ void CSGame::OnEntry()
 	{
 		std::cout << "failed when opening ..\\Assets\\hen3.wav file" << std::endl;
 	}
+
+	snd = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\start.wav", SND_COUNTER);
+	snd = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\win.wav", SND_WIN);
+	snd = MAIN->m_pSndManager->LoadSoundFx(L"..\\Assets\\loser.wav", SND_LOSER);
 		
 	//Start timers
 	SetTimer(MAIN->m_hWnd, TIMER_START, 1000, nullptr);
+}
 
+void CSGame::OnExit()
+{
+	SAFE_DELETE(m_pCamera);
+	m_pSndBackground->Stop();
+	for (auto snd : m_vHenFxs)
+	{
+		snd->Stop();
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		KillTimer(MAIN->m_hWnd, i + 1);
+	}
+	SAFE_DELETE(staticScenario);
+	SAFE_DELETE(dynamicScenario);
+	DeleteCriticalSection(&CPlayer::m_csLock);
+
+	// stopping ia threads
+	StopIaPlayers();
+	for (auto p : m_vPlayers)
+	{
+		delete p;
+	}
+
+	for (auto p : m_vComputerPlayers)
+	{
+		delete p;
+	}
+	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 
 unsigned long CSGame::OnEvent(CEventBase * pEvent)
@@ -395,6 +443,14 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			{
 				m_bShowCounter = true;
 				m_dCurrentCounting--;
+				MAIN->m_pSndManager->PlayFx(SND_COUNTER, 1, 0, 1);
+			}
+			else if (TIMER_NEXT_STATE == pWin32->m_wParam)
+			{
+				KillTimer(MAIN->m_hWnd, TIMER_NEXT_STATE);
+				m_pSMOwner->Transition(CLSID_CSGameOver);
+				InvalidateRect(MAIN->m_hWnd, nullptr, false);
+				return 0;
 			}
 			break;
 		case WM_CHAR:
@@ -404,7 +460,6 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				m_pSMOwner->Transition(CLSID_CSGame);
 				InvalidateRect(MAIN->m_hWnd, nullptr, false);
 				return 0;
-				break;
 			}
 		}
 	}
@@ -413,25 +468,22 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		auto Action = (CActionEvent *)pEvent;
 		auto player = m_vPlayers[Action->m_nSource];
 		if (userInteraction) {
-			//cout << "User interaction enabled" << endl;
 			float Stimulus;
 			switch (Action->m_nAction) {
 			case JOY_AXIS_RIGHT_PRESSED:
 				player->MoveSelector(MoveEnum::RIGHT);
 				cout << "Player: " << player->GetPlayerName() << " is in barn = " << player->GetCurrentBarnChoosed() << endl;
-				//fixingSelector();
 				break;
 			case JOY_AXIS_LEFT_PRESSED:
 				player->MoveSelector(MoveEnum::LEFT);
 				cout << "Player: " << player->GetPlayerName() << " is in barn = " << player->GetCurrentBarnChoosed() << endl;
-				//fixingSelector();
 				break;
-			case JOY_BUTTON_B_PRESSED:
+			case JOY_BUTTON_A_PRESSED:
 				if (player->BarnIsChoosed()) break;
 				player->ChooseBarn();
 
 
-				cout << "Button B pressed" << endl;
+				cout << "Button A pressed" << endl;
 				for (int i = 0; i < totalBarns; i++) {
 					Barn *barn = dynamic_cast<Barn*>(staticScenario->getScenarioObect(i));
 					cout << barn->getHensInHouse() << endl;
@@ -461,43 +513,18 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 				break;
 			}
 		} // end user interaction
-		else {
+		/*else {
 			float Stimulus;
 			switch (Action->m_nAction)
 			{
-			/*case JOY_AXIS_RX:
-				//Dead zone
-				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
-				if (Stimulus != 0.0){
-					m_pCamera->MoveXAxe(Stimulus);
-				}
-				break;
-			case JOY_AXIS_RY:
-				//Dead zone
-				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
-				if (Stimulus != 0.0){
-					m_pCamera->MoveZAxe(Stimulus);
-				}
-				break;
-			case JOY_AXIS_LX:
-				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis);
-				if (Stimulus != 0.0){
-					m_pCamera->RotateXAxe(Stimulus);
-				}
-				break;
-			case JOY_AXIS_LY:
-				Stimulus = (fabs(Action->m_fAxis) < 0.2 ? 0.0f : Action->m_fAxis * -1);
-				if (Stimulus != 0.0){
-					m_pCamera->RotateYAxe(Stimulus);
-				}
-				break;*/
+
 			case JOY_BUTTON_A_PRESSED: {
 				cout << "Button A pressed fomr joystic: " << Action->m_nSource << endl;
 				StartGame();
 			}
 				break;
 			}
-		}
+		}*/
 	}
 
 	if (APP_LOOP == pEvent->m_ulEventType)
@@ -505,6 +532,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		auto Paint = MAIN->m_pDXPainter;
 		auto DXManager = MAIN->m_pDXManager;
 
+		MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
 		Paint->SetRenderTarget(DXManager->GetMainRTV(), //Backbuffer
 			DXManager->GetMainDSV()); //ZBuffer
 
@@ -603,7 +631,7 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		dynamicScenario->paintScenarioObjects(Paint);
 
 		// show counter
-		if (m_bShowCounter)
+		if (m_bShowCounter || showWinner)
 		{
 			Paint->SetRenderTarget(DXManager->GetMainRTV(), //Backbuffer
 				DXManager->GetMainDSV()); //ZBuffer
@@ -619,7 +647,12 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 			Paint->m_Params.Projection =
 				Paint->m_Params.View =
 				Paint->m_Params.World = Identity();
-			ShowCounting();
+
+			if (m_bShowCounter)
+				ShowCounting();
+			if (showWinner)
+				ShowWinner();
+
 			MAIN->m_pDXManager->GetContext()->OMSetBlendState(nullptr, nullptr, -1);
 			m_pCamera->setView(p, v, w);
 			Paint->m_Params.Flags = LIGHTING_DIFFUSE;
@@ -628,38 +661,6 @@ unsigned long CSGame::OnEvent(CEventBase * pEvent)
 		DXManager->GetSwapChain()->Present(1, 0);
 	}
 	return __super::OnEvent(pEvent);
-}
-
-void CSGame::OnExit()
-{
-	//SAFE_DELETE(m_pGeometry);
-	SAFE_DELETE(m_pCamera);
-	m_pSndBackground->Stop();
-	for (auto snd : m_vHenFxs)
-	{
-		snd->Stop();
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		KillTimer(MAIN->m_hWnd, i + 1);
-	}
-	SAFE_DELETE(staticScenario);
-	SAFE_DELETE(dynamicScenario);
-	DeleteCriticalSection(&CPlayer::m_csLock);
-
-	// stopping ia threads
-	StopIaPlayers();
-	for (auto p : m_vPlayers)
-	{
-		delete p;
-	}
-
-	for (auto p : m_vComputerPlayers)
-	{
-		delete p;
-	}
-	printf("CSGame::OnExit()\n"); fflush(stdout);
 }
 
 void CSGame::manageHensMovement(){
@@ -760,6 +761,28 @@ void CSGame::moveHensBackwards()
 		hensOutPainted = false;
 		userInteraction = false;
 		m_pSndBackground->Stop();
+
+
+		// snd if some won
+		int winner = 0;
+		int max = -1;
+		for (int i = 0; i < barnTotals.size(); i++)
+		{
+			if (barnTotals[i] > max)
+			{
+				max = barnTotals[i];
+				winner = i;
+			}
+		}
+
+
+		if (CPlayer::m_vBoardBarnsChoosed[winner] == true)
+			MAIN->m_pSndManager->PlayFx(SND_WIN, 1, 0, 1);
+		else
+			MAIN->m_pSndManager->PlayFx(SND_LOSER, 1, 0, 1);
+
+		//set timer to go to next state
+		SetTimer(MAIN->m_hWnd, TIMER_NEXT_STATE, 6000, nullptr);
 	}
 }
 
@@ -767,10 +790,11 @@ void CSGame::drawHensInBarn()
 {
 	VECTOR4D color = { 1, 1, 1, 1 };
 
-	Barn *barn0 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(0));
-	Barn *barn1 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(1));
-	Barn *barn2 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(2));
-	Barn *barn3 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(3));
+	/* TODO: check if the barns was inverted*/
+	Barn *barn0 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(3));
+	Barn *barn1 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(2));
+	Barn *barn2 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(1));
+	Barn *barn3 = dynamic_cast<Barn*>(staticScenario->getScenarioObect(0));
 
 	// Translation Matrix
 
@@ -838,6 +862,66 @@ void CSGame::ShowCounting()
 		StartGame();
 	}
 	
+}
+
+void CSGame::ShowWinner()
+{
+
+	auto Paint = MAIN->m_pDXPainter;
+	auto DXManager = MAIN->m_pDXManager;
+	auto Ctx = MAIN->m_pDXManager->GetContext();
+
+	int winner = 0;
+	int max = -1;
+	for (int i = 0; i < barnTotals.size(); i++)
+	{
+		if (barnTotals[i] > max)
+		{
+			max = barnTotals[i];
+			winner = i;
+		}
+	}
+
+	//winner = barnTotals.size() - 1 - winner;
+
+	float large = 0.5;
+	float startX = -0.725;
+	float y = 0.8;
+	float x1, x2, x3, x4;
+
+	int oWinner = CPlayer::m_vBoardBarnsChoosed.size() - 1 - winner;
+
+	bool isThereWinner = CPlayer::m_vBoardBarnsChoosed[winner] == true;
+
+	if (isThereWinner)
+	{
+		int oWinner = CPlayer::m_vBoardBarnsChoosed.size() - 1 - winner;
+		x1 = x3 = startX + (oWinner * 0.37);
+		x2 = x4 = x1 + (large / 2 + (large / 4));
+	}
+	else
+	{
+		x1 = x3 = -0.18;
+		x2 = x4 = x1 + (large / 2 + (large / 4));
+	}
+	
+
+	Paint->m_Params.Flags = MAPPING_EMISSIVE;
+	ID3D11ShaderResourceView *pSRV;
+	CDXBasicPainter::VERTEX frame[4]
+	{
+		{ { x1, y,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,0,0,0 } },
+		{ { x2, y,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,0,0,0 } },
+		{ { x3, y - large,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 0,1,0,0 } },
+		{ { x4, y - large,0,1 },{ 0,0,0,0 },{ 0,0,0,0 },{ 0,0,0,0 },{ 1,1,1,1 },{ 1,1,0,0 } }
+	};
+	unsigned long indices[6]{ 0, 1, 2, 2, 1, 3 };
+
+	if (isThereWinner)
+		Ctx->PSSetShaderResources(3, 1, &m_pWinnerResourceView);
+	else 
+		Ctx->PSSetShaderResources(3, 1, &m_pLoserResourceView);
+	Paint->DrawIndexed(frame, 4, indices, 6);
 }
 
 CSGame::CSGame()

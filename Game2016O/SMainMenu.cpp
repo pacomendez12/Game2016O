@@ -43,7 +43,7 @@ void CSMainMenu::OnEntry()
 	/* Generar imagenes: https://dabuttonfactory.com/#t=Salir&f=Ubuntu-Bold&ts=90&tc=fff&tshs=1&tshc=999&hp=180&vp=11&c=0&bgt=gradient&bgc=f90&ebgc=e69138&be=1&bs=1&bc=f90*/
 
 	/* Cargando Recursos de botones */
-	const char *menuLabel[NUMBER_BUTTONS] { "jugar", "unirse", "servidor", "salir" };
+	const char *menuLabel[NUMBER_BUTTONS] { "1jugador", "2jugador", "3jugador", "salir" };
 	const char *menuOptionsLabel[BUTTON_STATES_NUMBER] { "n", "f" }; // n = on, f = off
 
 	m_vMenuButtons.resize(NUMBER_BUTTONS);
@@ -68,17 +68,17 @@ void CSMainMenu::OnEntry()
 		}
 
 		const float BUTTON_Y_OFFSET = 0.0f;
-		const float SEPARATION = 0.26f;
+		const float SPACE = 0.26f;
 
 		/* eligiendo las coordenadas */
 		m_vMenuButtons[btnIdx].frame[0].Position = { -0.8f, 1.8f / float(NUMBER_BUTTONS) - 
-			BUTTON_Y_OFFSET - (btnIdx * SEPARATION), 0, 1 };
+			BUTTON_Y_OFFSET - (btnIdx * SPACE), 0, 1 };
 		m_vMenuButtons[btnIdx].frame[1].Position = { -0.2f, 1.8f / float(NUMBER_BUTTONS) - 
-			BUTTON_Y_OFFSET - (btnIdx * SEPARATION), 0, 1 };
+			BUTTON_Y_OFFSET - (btnIdx * SPACE), 0, 1 };
 		m_vMenuButtons[btnIdx].frame[2].Position = { -0.8f, 1.0f / float(NUMBER_BUTTONS) - 
-			BUTTON_Y_OFFSET - (btnIdx * SEPARATION), 0, 1 };
+			BUTTON_Y_OFFSET - (btnIdx * SPACE), 0, 1 };
 		m_vMenuButtons[btnIdx].frame[3].Position = { -0.2f, 1.0f / float(NUMBER_BUTTONS) - 
-			BUTTON_Y_OFFSET - (btnIdx * SEPARATION), 0, 1 };
+			BUTTON_Y_OFFSET - (btnIdx * SPACE), 0, 1 };
 
 		m_vMenuButtons[btnIdx].frame[0].Color = { 1, 1, 1, 1 };
 		m_vMenuButtons[btnIdx].frame[1].Color = { 1, 1, 1, 1 };
@@ -151,14 +151,15 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 			//std::cout << "recibi = " << pInput->m_nAction << std::endl;
 			switch (m_nOption)
 			{
-			case JUGAR:
+			case _1JUGADOR: case _2JUGADORES: case _3JUGADORES:
+				MAIN->m_dPlayersNumber = m_nOption + 1;
 				m_pSMOwner->Transition(CLSID_CSGame);
 				InvalidateRect(MAIN->m_hWnd, nullptr, false);
 				return 0;
 			case SALIR:
 				exit(EXIT_SUCCESS);
 			default:
-				// por ahora
+				MAIN->m_dPlayersNumber = 1;
 				m_pSMOwner->Transition(CLSID_CSGame);
 				InvalidateRect(MAIN->m_hWnd, nullptr, false);
 				return 0;
@@ -245,15 +246,6 @@ unsigned long CSMainMenu::OnEvent(CEventBase* pEvent)
 
 			//TODO: resolver por que no se muestran los objetos cuando dibujo texto
 		}
-//#if 0
-		//text
-		MATRIX4D ST = Translation(0.5, -0.5, 0) * //Centro del caracter
-			Scaling(0.05, 0.1, 1) * // Tamanio del caracter
-			/*RotationZ(3.141592 / 4) * */ // Orientacion del text
-			Translation(-1, 1, 0); // Posicion del texto
-		VECTOR4D blanco = { 1, 1, 1, 1 };
-		MAIN->m_pTextRenderer->RenderText(ST, "Francisco Mendez", blanco);
-//#endif
 
 		MAIN->m_pDXManager->GetSwapChain()->Present(1, 0);
 	}

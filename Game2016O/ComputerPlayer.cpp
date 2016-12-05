@@ -46,8 +46,9 @@ DWORD CComputerPlayer::IaThread(CComputerPlayer * i_ia)
 {
 	int val = m_dist(m_mt);
 	auto p = i_ia->m_pOwner;
-	while (i_ia->m_bRunning)
-	{
+	/*while (i_ia->m_bRunning)
+	{*/
+		i_ia->m_bRunning = false;
 		int cBarn = i_ia->m_pOwner->GetCurrentBarnChoosed();
 		vector<int> goals;
 		vector<int> barnsGenerator;
@@ -98,6 +99,6 @@ DWORD CComputerPlayer::IaThread(CComputerPlayer * i_ia)
 			}
 			
 		} while (!choosed);
-	}
+	//}
 	return 0;
 }

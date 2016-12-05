@@ -24,9 +24,13 @@ class CComputerPlayer;
 #define SND_HEN1 1
 #define SND_HEN2 2
 #define SND_HEN3 3
-#define SND_BACKGROUND 4
+#define SND_COUNTER 4
+#define SND_BACKGROUND 5
+#define SND_WIN 6
+#define SND_LOSER 7
 #define TIMER_START 10
 #define TIMER_START_STEEP 11
+#define TIMER_NEXT_STATE 12
 
 using namespace std;
 
@@ -70,7 +74,13 @@ public:
 	inline void Hide() { m_pSelecter->setPaint(false); }
 	inline const char * GetPlayerName() { return m_szName; }
 	inline ScenarioObject *GetScenarioObject() { return m_pSelecter; }
-	inline static void InitializeBoard(int total) { m_vBoardBarnsChoosed.resize(total, false); }
+	inline static void InitializeBoard(int total) { 
+		m_vBoardBarnsChoosed.resize(total);
+		for (int i = 0; i < m_vBoardBarnsChoosed.size(); i++)
+		{
+			m_vBoardBarnsChoosed[i] = false;
+		}
+	}
 	inline bool BarnIsChoosed() { return m_bBarnChoosed; }
 	inline bool IsHuman() { return m_bIsHuman; }
 };
@@ -128,12 +138,16 @@ protected:
 	CMesh *barnMesh;
 	CMesh *henMesh;
 	CMesh *sphereMesh;
+
+	// images
+	ID3D11ShaderResourceView * m_pWinnerResourceView;
+	ID3D11ShaderResourceView * m_pLoserResourceView;
+
+	// Sound
 	CSndControl* m_pSndBackground;
 	vector<CSndControl *> m_vHenFxs;
 
 	// General Variables
-	CMesh *m_pTable;
-	CMesh *m_pMallet;
 	CCamera *m_pCamera;
 	Scenario *staticScenario;
 	Scenario *dynamicScenario;
@@ -143,10 +157,11 @@ protected:
 	vector<int> incrementInBarns;
 	vector<int> removeHens;
 	map<int, ScenarioPosition *> barnScenarioPositions;
-	int m_dHensInBarn;
 	map<int, ScenarioObject *>::iterator it;
+	int m_dHensInBarn;
 	int m_dCurrentCounting;
 	bool m_bShowCounter;
+	vector<int> barnTotals;
 
 	// HSM methods
 	unsigned long OnEvent(CEventBase* pEvent);
@@ -156,7 +171,6 @@ protected:
 	// Game actions, control and configuration
 	void manageHensMovement();
 	void createScenarioElements(int totalSpheres);
-	
 	
 
 	void StartIaPlayers();
@@ -194,5 +208,6 @@ public:
 	void StartGame();
 	void StartCounting();
 	void ShowCounting();
+	void ShowWinner();
 };
 

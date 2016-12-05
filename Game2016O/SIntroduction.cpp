@@ -63,7 +63,7 @@ unsigned long CSIntroduction::OnEvent(CEventBase * pEvent)
 				if (1 == pWin32->m_wParam)
 				{
 					//m_pSMOwner->Transition(CLSID_CSMainMenu);
-					m_pSMOwner->Transition(CLSID_CSGame);
+					m_pSMOwner->Transition(CLSID_CSMainMenu);
 					InvalidateRect(MAIN->m_hWnd, NULL, false);
 					return 0;
 				}
