@@ -147,8 +147,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    g_Game.RegisterState(pSCredits, CLSID_CSCredits, 0);
    g_Game.RegisterState(pSCredits, CLSID_CSCredits, 0);
    g_Game.RegisterState(pSGameOver, CLSID_CSGameOver, 0);
-   //g_Game.RegisterState(pSMain, CLSID_CSMain, CLSID_CSIntroduction);
-   g_Game.RegisterState(pSMain, CLSID_CSMain, CLSID_CSMainMenu);
+   g_Game.RegisterState(pSMain, CLSID_CSMain, CLSID_CSIntroduction);
+   //g_Game.RegisterState(pSMain, CLSID_CSMain, CLSID_CSMainMenu);
    //g_Game.RegisterState(pSMain, CLSID_CSMain, CLSID_CSGame);
    //g_Game.RegisterState(pSMain, CLSID_CSMain, CLSID_CSCredits);
    //g_Game.RegisterState(pSMain, CLSID_CSMain, CLSID_CSGameOver);
